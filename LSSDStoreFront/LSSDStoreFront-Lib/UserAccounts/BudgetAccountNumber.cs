@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LSSDStoreFront_Lib
+namespace LSSD.StoreFront.Lib
 {
-    class Budget
+    public class BudgetAccountNumber
     {
+        public int Id { get; set; }
         public string DisplayName { get; set; }
         public string AccountNumber { get; set; }
         public int OwnerID { get; set; }        

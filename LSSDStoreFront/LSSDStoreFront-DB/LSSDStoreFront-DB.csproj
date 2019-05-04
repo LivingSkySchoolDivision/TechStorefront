@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>LSSD.StoreFront.DB</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LSSDStoreFront-Lib\LSSDStoreFront-Lib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UserAccounts\" />
+    <Folder Include="ShoppingCart\" />
+    <Folder Include="Orders\" />
+  </ItemGroup>
+
+</Project>

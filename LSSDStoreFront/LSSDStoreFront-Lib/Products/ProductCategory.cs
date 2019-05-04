@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LSSDStoreFront_Lib
+namespace LSSD.StoreFront.Lib
 {
-    class ProductCategory
+    public class ProductCategory
     {        
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
-        public string ParentCategory { get; set; }        
+        public int ParentCategoryId { get; set; } 
+        public bool IsEnabled { get; set; }
         public DateTime AvailableFromDate { get; set; }
         public DateTime AvailableToDate { get; set; }
     }

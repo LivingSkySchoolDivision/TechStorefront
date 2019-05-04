@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace LSSDStoreFront_FrontEnd.Pages
+namespace LSSD.StoreFront.FrontEnd.Pages
 {
     public class IndexModel : PageModel
     {

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace LSSDStoreFront_FrontEnd
+namespace LSSD.StoreFront.FrontEnd
 {
     public class Program
     {

@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LSSDStoreFront_Lib
+namespace LSSD.StoreFront.Lib
 {
-    class InventoryChanges
+    public class ShoppingCartItem
     {
+        public int Id { get; set; }
         public int ItemID { get; set; }
         public int Quantity { get; set; }
-        public DateTime EventDate { get; set; }
+        public bool IsNoLongerAvailable { get; set; }        
     }
 }
