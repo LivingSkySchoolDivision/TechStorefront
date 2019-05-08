@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LSSDStoreFront-Lib", "LSSDS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LSSD-StoreFront-TesterConsole", "LSSD-StoreFront-TesterConsole\LSSD-StoreFront-TesterConsole.csproj", "{4415C8DE-4271-426D-9B61-73C30906D0BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSSDStoreFront-DB", "LSSDStoreFront-DB\LSSDStoreFront-DB.csproj", "{07DCE91E-4C5E-4931-941F-9C49C9C06083}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LSSDStoreFront-DB", "LSSDStoreFront-DB\LSSDStoreFront-DB.csproj", "{07DCE91E-4C5E-4931-941F-9C49C9C06083}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
