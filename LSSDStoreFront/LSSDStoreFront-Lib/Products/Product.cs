@@ -18,7 +18,7 @@ namespace LSSD.StoreFront.Lib
         public bool IsLimitedByDate { get; set; }
         public bool IsSpecialOrderItem { get; set; }
         public DateTime AvailableFromDate { get; set; }
-        public DateTime AvailableToDate { get; set; }       
+        public DateTime AvailableToDate { get; set; }    
 
     }
 }

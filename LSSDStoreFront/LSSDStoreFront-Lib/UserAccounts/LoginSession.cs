@@ -8,7 +8,7 @@ namespace LSSD.StoreFront.Lib
     {
         public string Username { get; set; }
         public string IPAddress { get; set; }
-        public string Thumbpring { get; set; }
+        public string Thumbprint { get; set; }
         public string BrowserUserAgent { get; set; }
         public DateTime Starts { get; set; }
         public DateTime Ends { get; set; }        

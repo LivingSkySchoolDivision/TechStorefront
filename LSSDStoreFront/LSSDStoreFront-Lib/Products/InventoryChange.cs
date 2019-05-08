@@ -10,5 +10,6 @@ namespace LSSD.StoreFront.Lib
         public int ProductId { get; set; }
         public int Quantity { get; set; }
         public DateTime EventDate { get; set; }
+        public string Notes { get; set; }
     }
 }
