@@ -6,23 +6,23 @@ using System.Linq;
 using System.Data.SqlClient;
 using System.Data;
 
-namespace LSSD.StoreFront.DB
+namespace LSSD.StoreFront.DB.repositories
 {
-    public class ProductRepository
+    public class ProductRepository : IRepository<Product>
     {
         // Connection string to use when talking to the database.
         // Saved when passed from the constructor when a new repository object is created.
         // Retained for the lifetime of this object.
-        private string _dbConnectionString = string.Empty;
+        private DatabaseContext _dbConnection;
 
         // Base SQL query to use. Methods below may add more things to this (like " WHERE" clauses), or
         // they may use their own queries.
         private const string SQL_Select = "SELECT * FROM Products WHERE IsFlaggedForDeletion=0";
 
         // Constructor
-        public ProductRepository(string DatabaseConnectionString)
+        public ProductRepository(DatabaseContext DatabaseConnection)
         {
-            this._dbConnectionString = DatabaseConnectionString;
+            this._dbConnection = DatabaseConnection;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace LSSD.StoreFront.DB
         /// </summary>
         /// <param name="dataReader">SqlDataReader object returned from the SQL Query</param>
         /// <returns>A shiny new Product object</returns>
-        private Product dataReaderToProduct(SqlDataReader dataReader)
+        private Product dataReaderToObject(SqlDataReader dataReader)
         {
             // Create a new Product object, and insert parts of the returned SQL results.
             // SQL results are parsed to a string first, and then to their own data type
@@ -66,7 +66,7 @@ namespace LSSD.StoreFront.DB
             // Open database connection
             // The "using" blocks ensure that the objects get disposed of, so 
             // we (hopefully) don't leak memory without realizing it.
-            using (SqlConnection connection = new SqlConnection(_dbConnectionString))
+            using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
             {
                 // Build a SQL query
                 using (SqlCommand sqlCommand = new SqlCommand
@@ -88,8 +88,8 @@ namespace LSSD.StoreFront.DB
                         // Read all the results, one row at a time, until there are no more to  read
                         while (dbDataReader.Read())
                         {
-                            // Try to parse the row into a Product object.
-                            Product product = dataReaderToProduct(dbDataReader);
+                            // Try to parse the row into an object to return.
+                            Product product = dataReaderToObject(dbDataReader);
 
                             // If something has gone horribly wrong, don't put a null object in the list of objects to
                             // return. Just skip it instead.
@@ -105,7 +105,7 @@ namespace LSSD.StoreFront.DB
                 } // Dispose of the SQL query object
             } // Dispose of the SQL connection object
 
-            // Return the list of products to the user
+            // Return the list of objects to the user
             return returnMe;
         }
 
@@ -128,7 +128,7 @@ namespace LSSD.StoreFront.DB
         {
             List<Product> returnMe = new List<Product>();
 
-            using (SqlConnection connection = new SqlConnection(_dbConnectionString))
+            using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand
                 {
@@ -145,7 +145,7 @@ namespace LSSD.StoreFront.DB
                     {
                         while (dbDataReader.Read())
                         {
-                            Product product = dataReaderToProduct(dbDataReader);
+                            Product product = dataReaderToObject(dbDataReader);
                             if (product != null)
                             {
                                 returnMe.Add(product);
@@ -167,7 +167,7 @@ namespace LSSD.StoreFront.DB
         /// <returns></returns>
         public Product Get(int Id)
         {
-            using (SqlConnection connection = new SqlConnection(_dbConnectionString))
+            using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand
                 {
@@ -184,7 +184,7 @@ namespace LSSD.StoreFront.DB
                     {
                         while (dbDataReader.Read())
                         {
-                            Product product = dataReaderToProduct(dbDataReader);
+                            Product product = dataReaderToObject(dbDataReader);
                             if (product != null)
                             {
                                 return product;
@@ -206,7 +206,7 @@ namespace LSSD.StoreFront.DB
         /// <param name="product"></param>
         public void Update(Product product)
         {
-            using (SqlConnection connection = new SqlConnection(_dbConnectionString))
+            using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand
                 {
@@ -245,7 +245,7 @@ namespace LSSD.StoreFront.DB
             // by flagging it as deleted. Then, we can either restore it later, or
             // clean it up outside this program.
 
-            using (SqlConnection connection = new SqlConnection(_dbConnectionString))
+            using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand
                 {
@@ -268,7 +268,7 @@ namespace LSSD.StoreFront.DB
         /// <param name="product"></param>
         public void UnDelete(int productId)
         {
-            using (SqlConnection connection = new SqlConnection(_dbConnectionString))
+            using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand
                 {
@@ -310,7 +310,7 @@ namespace LSSD.StoreFront.DB
         /// <param name="products"></param>
         public void Create(List<Product> products)
         {
-            using (SqlConnection connection = new SqlConnection(_dbConnectionString))
+            using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
             {
                 foreach(Product product in products) {
                     using (SqlCommand sqlCommand = new SqlCommand

@@ -10,12 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UserAccounts\" />
-    <Folder Include="ShoppingCart\" />
-    <Folder Include="Orders\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
   </ItemGroup>
 
