@@ -18,19 +18,18 @@ namespace LSSD.StoreFront.DB
         }
 
         // <product ID, item object>
-        private Dictionary<int, ShoppingCartItem> _items { get; set; }
+        private readonly Dictionary<int, ShoppingCartItem> _items = new Dictionary<int, ShoppingCartItem>();
 
-        private DatabaseContext _dbContext;
-        private User _user;
-        private ShoppingCartItemRepository _shoppingCartItemRepository;
-        private ProductRepository _productRepository;
-        
+        private readonly DatabaseContext _dbContext;
+        private readonly User _user;
+        private readonly ShoppingCartItemRepository _shoppingCartItemRepository;
+        private readonly ProductRepository _productRepository;        
                 
-        public bool HasItems
+        public bool IsEmpty
         {
             get
             {
-                return this._items.Count > 0;
+                return this._items.Count == 0;
             }
         }
         
@@ -47,41 +46,20 @@ namespace LSSD.StoreFront.DB
             // Load this user's shopping cart
             foreach (ShoppingCartItem sci in _shoppingCartItemRepository.GetAllForUser(UserAccount))
             {
-                this.Add(sci);
+                this.AddItem(sci);
             }
         }
-
-
-        public Order CheckOut()
-        {
-            // Convert this shopping cart to an order
-            return new Order();
-        }
-
 
         public void Save()
         {
-            // Save this shopping cart to the database
-
-            // If the list is empty, delete any shopping carts for this user
-            // If a shopping cart exists for this user already, delete it and remake it
-
-            // DELETE SHOPPING CARTS FOR THIS USER
-            // here
-
-            if (this.HasItems)
-            {
-                // CREATE NEW SHOPPING CART FOR THIS USER
-                // here
-            }
-
+            _shoppingCartItemRepository.UpdateUserCartItems(_user, this._items.Values.ToList<ShoppingCartItem>());
         }
 
         // ********************************************************
         // * Add Items
         // ********************************************************
 
-        public void Add(int ProductId, int Quantity)
+        public void AddItem(int ProductId, int Quantity)
         {
             if (Quantity != 0)
             {
@@ -111,7 +89,7 @@ namespace LSSD.StoreFront.DB
             }
         }
 
-        public void Add(Product product, int Quantity)
+        public void AddItem(Product product, int Quantity)
         {
             if (Quantity != 0)
             {
@@ -138,7 +116,7 @@ namespace LSSD.StoreFront.DB
             }
         }
 
-        private void Add(ShoppingCartItem item)
+        private void AddItem(ShoppingCartItem item)
         {
             if (item != null)
             {
@@ -185,7 +163,7 @@ namespace LSSD.StoreFront.DB
         // * Remove Items
         // ********************************************************
 
-        public void Remove(int ProductId, int Quantity)
+        public void RemoveItem(int ProductId, int Quantity)
         {
             if (_items.ContainsKey(ProductId))
             {
@@ -199,7 +177,7 @@ namespace LSSD.StoreFront.DB
             }
         }
 
-        public void Remove(Product product, int Quantity)
+        public void RemoveItem(Product product, int Quantity)
         {
             if (product != null)
             {
@@ -216,7 +194,7 @@ namespace LSSD.StoreFront.DB
             }
         }
 
-        public void Remove(ShoppingCartItem item)
+        public void RemoveItem(ShoppingCartItem item)
         {
             if (item != null)
             {
@@ -227,96 +205,13 @@ namespace LSSD.StoreFront.DB
             }
         }
 
-        
-        // ********************************************************
-        // * Set Quantity of Items
-        // ********************************************************
-
-        public void SetQuantity(int ProductId, int Quantity)
-        {
-            if (ProductId > 0)
-            {
-                if (_items.ContainsKey(ProductId))
-                {
-                    if (Quantity <= 0)
-                    {
-                        ClearProduct(ProductId);
-                    } else
-                    {
-                        _items[ProductId].Quantity = Quantity;
-                    }
-                } else
-                {
-                    if (Quantity > 0)
-                    {
-                        Add(ProductId, Quantity);
-                    }
-                }
-            }
-        }
-
-        public void SetQuantity(Product product, int Quantity)
-        {
-            if (product != null)
-            {                
-                if (_items.ContainsKey(product.Id))
-                {
-                    if (Quantity <= 0)
-                    {
-                        ClearProduct(product);
-                    }
-                    else
-                    {
-                        _items[product.Id].Quantity = Quantity;
-                    }
-                }
-                else
-                {
-                    if (Quantity > 0)
-                    {
-                        Add(product, Quantity);
-                    }
-                }
-                
-            }
-        }
-
-        public void SetQuantity(ShoppingCartItem ShoppingCartItem)
-        {
-            Update(ShoppingCartItem);
-        }
-
-        public void Update(ShoppingCartItem ShoppingCartItem)
-        {
-            if (ShoppingCartItem != null)
-            {
-                if (_items.ContainsKey(ShoppingCartItem.ProductId))
-                {
-                    if (ShoppingCartItem.Quantity <= 0)
-                    {
-                        ClearProduct(ShoppingCartItem);
-                    }
-                    else
-                    {
-                        _items[ShoppingCartItem.ProductId] = ShoppingCartItem;
-                    }
-                }
-                else
-                {
-                    if (ShoppingCartItem.Quantity > 0)
-                    {
-                        Add(ShoppingCartItem);
-                    }
-                }
-            }
-        }
                
        
         // ********************************************************
         // * Clear Items
         // ********************************************************
 
-        public void ClearProduct(Product product)
+        public void ClearItem(Product product)
         {
             if (product != null)
             {
@@ -327,7 +222,7 @@ namespace LSSD.StoreFront.DB
             }
         }
 
-        public void ClearProduct(ShoppingCartItem item)
+        public void ClearItem(ShoppingCartItem item)
         {
             if (item != null)
             {
@@ -338,7 +233,7 @@ namespace LSSD.StoreFront.DB
             }
         }
 
-        public void ClearProduct(int ProductId)
+        public void ClearItem(int ProductId)
         {
             if (_items.ContainsKey(ProductId))
             {
@@ -346,7 +241,7 @@ namespace LSSD.StoreFront.DB
             }
         }
                 
-        public void Clear()
+        public void ClearCart()
         {
             _items.Clear();
         }

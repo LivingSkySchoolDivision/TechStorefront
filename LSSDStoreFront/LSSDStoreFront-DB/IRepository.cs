@@ -10,7 +10,6 @@ namespace LSSD.StoreFront.DB
         List<t> GetAll();
         void Update(t obj);
         void Delete(t obj);
-        void UnDelete(t obj);
         void Create(t obj);
         void Create(List<t> obj);
     }

@@ -22,24 +22,25 @@ namespace LSSD_StoreFront_TesterConsole
 
             Inventory Inventory = new Inventory(dbConnection);
             ShoppingCart ShoppingCart = new ShoppingCart(dbConnection, User);
+            
+            foreach (ShoppingCartItem p in ShoppingCart.Items)
+            {
+                Console.WriteLine(p.Quantity + " " + p.Product.Name);
+            }
 
-            Product product = Inventory.Item(4);
-
-            ShoppingCart.Add(product, 5);
-            ShoppingCart.Add(product, 19);
-            ShoppingCart.Add(2, 20);
-            ShoppingCart.Add(0, 20);
-            ShoppingCart.Remove(2, 1);
-            //ShoppingCart.ClearProduct(product);
-            ShoppingCart.Remove(product, 1);
+            ShoppingCart.ClearCart();
 
             foreach (ShoppingCartItem p in ShoppingCart.Items)
             {
                 Console.WriteLine(p.Quantity + " " + p.Product.Name);
             }
 
+            ShoppingCart.Save();
 
-
+            foreach (ShoppingCartItem p in ShoppingCart.Items)
+            {
+                Console.WriteLine(p.Quantity + " " + p.Product.Name);
+            }
         }
     }
 }
