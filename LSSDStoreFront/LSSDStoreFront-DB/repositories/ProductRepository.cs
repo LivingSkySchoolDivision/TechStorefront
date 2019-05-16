@@ -42,6 +42,7 @@ namespace LSSD.StoreFront.DB.repositories
                 CategoryId = dataReader["CategoryId"].ToString().ToInt(),
                 Name = dataReader["ProductName"].ToString(),
                 Description = dataReader["ProductDescription"].ToString(),
+                LongDescription = dataReader["ProductLongDescription"].ToString(),
                 Alert = dataReader["ProductAlerts"].ToString(),
                 ThumbnailFileName = dataReader["ThumbnailFileName"].ToString(),
                 Price = dataReader["Price"].ToString().ToDecimal(),
@@ -51,6 +52,7 @@ namespace LSSD.StoreFront.DB.repositories
                 IsSpecialOrderItem = dataReader["IsSpecialOrderItem"].ToString().ToBool(),
                 AvailableFromDate = dataReader["AvailableFrom"].ToString().ToDateTime(),
                 AvailableToDate = dataReader["AvailableTo"].ToString().ToDateTime(),
+                RecyclingFee = dataReader["RecyclingFee"].ToString().ToDecimal()
             };
         }
 
@@ -212,13 +214,14 @@ namespace LSSD.StoreFront.DB.repositories
                 {
                     Connection = connection,
                     CommandType = CommandType.Text,
-                    CommandText = "UPDATE Products SET CategoryId=@CATID, ProductName=@NAME, ProductDescription=@DESC, ProductAlerts=@ALERT, Price=@PRICE, IsProductAvailable=@ISAVAIL, IsLimitedByStock=@ISLIMITDBYSTOCK, IsLimitedByDate=@ISLIMITEDBYDATE, IsSpecialOrderItem=@ISSPECIALORDER, AvailableFrom=@AVAILFROM, AvailableTo=@AVAILTO, ThumbnailFileName=@THUMBFILE WHERE Id=@OBJID"
+                    CommandText = "UPDATE Products SET CategoryId=@CATID, ProductName=@NAME, ProductDescription=@DESC, ProductLongDescription=@LDESC, ProductAlerts=@ALERT, Price=@PRICE, IsProductAvailable=@ISAVAIL, IsLimitedByStock=@ISLIMITDBYSTOCK, IsLimitedByDate=@ISLIMITEDBYDATE, IsSpecialOrderItem=@ISSPECIALORDER, AvailableFrom=@AVAILFROM, AvailableTo=@AVAILTO, ThumbnailFileName=@THUMBFILE, RecyclingFee=@RECYCLINGFEE WHERE Id=@OBJID  "
                 })
                 {
                     sqlCommand.Parameters.AddWithValue("OBJID", product.Id);
                     sqlCommand.Parameters.AddWithValue("CATID", product.CategoryId);
                     sqlCommand.Parameters.AddWithValue("NAME", product.Name ?? string.Empty);
                     sqlCommand.Parameters.AddWithValue("DESC", product.Description ?? string.Empty);
+                    sqlCommand.Parameters.AddWithValue("LDESC", product.LongDescription ?? string.Empty);
                     sqlCommand.Parameters.AddWithValue("ALERT", product.Alert ?? string.Empty);
                     sqlCommand.Parameters.AddWithValue("PRICE", product.Price);
                     sqlCommand.Parameters.AddWithValue("ISAVAIL", product.IsAvailable);
@@ -228,6 +231,7 @@ namespace LSSD.StoreFront.DB.repositories
                     sqlCommand.Parameters.AddWithValue("AVAILFROM", product.AvailableFromDate.ToDatabaseSafeDateTime());
                     sqlCommand.Parameters.AddWithValue("AVAILTO", product.AvailableToDate.ToDatabaseSafeDateTime());
                     sqlCommand.Parameters.AddWithValue("THUMBFILE", product.ThumbnailFileName ?? string.Empty);
+                    sqlCommand.Parameters.AddWithValue("RECYCLINGFEE", product.RecyclingFee);
                     sqlCommand.Connection.Open();
                     sqlCommand.ExecuteNonQuery();
                     sqlCommand.Connection.Close();
@@ -317,14 +321,15 @@ namespace LSSD.StoreFront.DB.repositories
                     {
                         Connection = connection,
                         CommandType = CommandType.Text,
-                        CommandText = "INSERT INTO Products(CategoryId, ProductName, ProductDescription, Price, IsProductAvailable, IsLimitedByStock, IsLimitedByDate, IsSpecialOrderItem, AvailableFrom, AvailableTo, ThumbnailFileName, ProductAlerts) " +
-                                                    "VALUES(@CID, @NME, @DSC, @PRCE,  @LAVAIL, @LSTOCK, @LDATE, @LSCL, @DFRM, @DTO, @THMB, @ALRT)"
+                        CommandText = "INSERT INTO Products(CategoryId, ProductName, ProductDescription, ProductLongDescription, Price, IsProductAvailable, IsLimitedByStock, IsLimitedByDate, IsSpecialOrderItem, AvailableFrom, AvailableTo, ThumbnailFileName, ProductAlerts, RecyclingFee) " +
+                                                    "VALUES(@CID, @NME, @DSC, @LDSC, @PRCE,  @LAVAIL, @LSTOCK, @LDATE, @LSCL, @DFRM, @DTO, @THMB, @ALRT, @RECYCLINGFEE)"
                     })
                     {
                         sqlCommand.Parameters.Clear();
                         sqlCommand.Parameters.AddWithValue("@CID", product.CategoryId);
                         sqlCommand.Parameters.AddWithValue("@NME", product.Name ?? string.Empty);
                         sqlCommand.Parameters.AddWithValue("@DSC", product.Description ?? string.Empty);
+                        sqlCommand.Parameters.AddWithValue("@LDSC", product.Description ?? string.Empty);
                         sqlCommand.Parameters.AddWithValue("@PRCE", product.Price);
                         sqlCommand.Parameters.AddWithValue("@LAVAIL", product.IsAvailable);
                         sqlCommand.Parameters.AddWithValue("@LSTOCK", product.IsLimitedByStock);
@@ -334,6 +339,7 @@ namespace LSSD.StoreFront.DB.repositories
                         sqlCommand.Parameters.AddWithValue("@DTO", product.AvailableToDate.ToDatabaseSafeDateTime());
                         sqlCommand.Parameters.AddWithValue("@THMB", product.ThumbnailFileName ?? string.Empty);
                         sqlCommand.Parameters.AddWithValue("@ALRT", product.Alert ?? string.Empty);
+                        sqlCommand.Parameters.AddWithValue("@RECYCLINGFEE", product.RecyclingFee);
                         sqlCommand.Connection.Open();
                         sqlCommand.ExecuteNonQuery();
                         sqlCommand.Connection.Close();

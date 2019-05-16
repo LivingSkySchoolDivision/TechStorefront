@@ -10,8 +10,10 @@ namespace LSSD.StoreFront.Lib
         public int CategoryId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public string LongDescription { get; set; }
         public string Alert { get; set; }
         public string ThumbnailFileName { get; set; }
+        public decimal RecyclingFee { get; set; }
         public decimal Price { get; set; }
         public bool IsAvailable { get; set; }
         public bool IsLimitedByStock { get; set; }

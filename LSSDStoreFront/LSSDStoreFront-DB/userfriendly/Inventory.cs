@@ -81,12 +81,21 @@ namespace LSSD.StoreFront.DB
             }
         }
 
-        public List<Product> ItemsFromCategory(ProductCategory Category) {
-            return _allItems.Values.Where(x => x.CategoryId == Category.Id).ToList();
+        public List<Product> ItemsFromCategory(ProductCategory Category)
+        {
+            return ItemsFromCategory(Category.Id);
         }
-        
-        public List<Product> ItemsFromCategory(int CategoryId) {
-            return _allItems.Values.Where(x => x.CategoryId == CategoryId).ToList();
+
+        public List<Product> ItemsFromCategory(int CategoryId)
+        {
+            if (CategoryId == 0)
+            {
+                return this.Items;
+            }
+            else
+            {
+                return _allItems.Values.Where(x => x.CategoryId == CategoryId).ToList();
+            }
         }
 
 
