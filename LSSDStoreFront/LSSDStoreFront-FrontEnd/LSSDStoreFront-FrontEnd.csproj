@@ -17,6 +17,7 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\LSSDStoreFront-DB\LSSDStoreFront-DB.csproj" />
     <ProjectReference Include="..\LSSDStoreFront-Lib\LSSDStoreFront-Lib.csproj" />
   </ItemGroup>
 

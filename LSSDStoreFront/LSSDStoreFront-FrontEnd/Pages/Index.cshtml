@@ -1,10 +1,162 @@
-﻿@page
+﻿@page  "{category?}/{item?}"
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
+
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@section SideBar{
+
+    <!--Start sidebar-->
+    <div class="row">
+        <div class="col-2 collapse d-md-flex bg-light pt-2 min-vh-100" id="sidebar">
+            @*
+                Pt-2: spacing
+                col-2: read more here https://getbootstrap.com/docs/4.1/layout/grid/
+                d-md-flex: flex - https://getbootstrap.com/docs/4.1/utilities/flex/
+
+            *@
+
+            <ul class="nav flex-column flex-nowrap sticky-top">
+
+                @foreach (Lib.ProductCategory topLevelCategory in Model.Inventory.TopLevelCategories)
+                {
+                    <li class="nav-item"><a class="nav-link" href="#">@topLevelCategory.Name</a></li>
+
+                    if (topLevelCategory.HasChildren)
+                    {
+                    <ul class="flex-column nav pl-4">
+                        @foreach (Lib.ProductCategory secondLevelCategory in topLevelCategory.ChildCategories)
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link p-0" href="">
+                                <i class="fa fa-fw fa-clock-o"></i> @secondLevelCategory.Name
+                            </a>
+                        </li>
+
+                        }
+                    </ul>
+                    }
+                }
+            </ul>
+            @*
+
+            <ul class="nav flex-column flex-nowrap sticky-top">
+                <li class="nav-item"><a class="nav-link" href="#">Overview</a></li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#submenu1" data-toggle="collapse" data-target="#submenu1">Reports</a>
+                    <div class="collapse fade" id="submenu1" aria-expanded="false">
+                        <ul class="flex-column pl-2 nav">
+                            <li class="nav-item"><a class="nav-link py-0" href="#">Orders</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link collapsed py-0" href="#submenu1sub1" data-toggle="collapse" data-target="#submenu1sub1">Customers</a>
+                                <div class="collapse small" id="submenu1sub1" aria-expanded="false">
+                                    <ul class="flex-column nav pl-4">
+                                        <li class="nav-item">
+                                            <a class="nav-link p-0" href="">
+                                                <i class="fa fa-fw fa-clock-o"></i> Daily
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link p-0" href="">
+                                                <i class="fa fa-fw fa-dashboard"></i> Dashboard
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link p-0" href="">
+                                                <i class="fa fa-fw fa-bar-chart"></i> Charts
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link p-0" href="">
+                                                <i class="fa fa-fw fa-compass"></i> Areas
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#">Analytics</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Export</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
+            </ul>
+                *@
+        </div>
+        <!--End Sidebar-->
+}
+
+    <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+
+    </div>
+    @if (Model.Inventory.Items.Count > 0)
+    {
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>thumb</td>
+                    <td>Name</td>
+                    <td>Description</td>
+                    <td>Price</td>
+                    <td>Add Button?</td>
+                </tr>
+                <tr>
+                    <form class="form-inline">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </tr>
+            </thead>
+
+            @foreach (Lib.ProductCategory category in Model.Inventory.AllCategories)
+            {
+                @foreach (Lib.Product product in Model.Inventory.ItemsFromCategory(category))
+                {
+                    <tr>
+                        @*
+                            <td>@(string.IsNullOrEmpty(product.ThumbnailFileName) ? "<i>No image</i>" : "<img src=\"" + @product.ThumbnailFileName + "\" />"))</td>
+                        *@
+                        <td></td>
+                        <td>@product.Name</td>
+                        <td>@product.Description</td>
+                        <td>@product.Price</td>
+                        <td>
+                            @*I don't think we want adding to cart to go to a new page- see about how to make this add to cart instead*@
+                            @if (product.IsAvailable)
+                            {
+                                <a asp-page"AddToCart" class="btn btn-default" role="button">Add to cart</a>
+                            }
+                            else
+                            {
+                                <p>No Stock</p>
+                            }
+
+
+                        </td>
+                    </tr>
+                }
+            }
+
+
+        </table>
+
+    }
+    else
+    {
+        <p>No Products Found</p>
+    }
+
+    <br /><br />
+    <div class="text-center">
+        <p>
+            <a asp-page="index">Test Link</a>
+        </p>
+
+        <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    </div>
