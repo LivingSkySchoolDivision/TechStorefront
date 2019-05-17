@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RootNamespace>LSSD.StoreFront.FrontEnd</RootNamespace>
+    <WebProject_DirectoryAccessLevelKey>1</WebProject_DirectoryAccessLevelKey>
   </PropertyGroup>
 
 
@@ -19,6 +20,11 @@
   <ItemGroup>
     <ProjectReference Include="..\LSSDStoreFront-DB\LSSDStoreFront-DB.csproj" />
     <ProjectReference Include="..\LSSDStoreFront-Lib\LSSDStoreFront-Lib.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
 </Project>
