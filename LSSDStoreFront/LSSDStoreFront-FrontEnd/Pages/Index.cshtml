@@ -21,7 +21,7 @@
 
                 @foreach (Lib.ProductCategory topLevelCategory in Model.Inventory.TopLevelCategories)
                 {
-                    <li class="nav-item"><a class="nav-link" href="#">@topLevelCategory.Name</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Categories/@topLevelCategory.Name">@topLevelCategory.Name</a></li>
 
                     if (topLevelCategory.HasChildren)
                     {
@@ -29,7 +29,7 @@
                         @foreach (Lib.ProductCategory secondLevelCategory in topLevelCategory.ChildCategories)
                         {
                         <li class="nav-item">
-                            <a class="nav-link p-0" href="">
+                            <a class="nav-link p-0" href="/Categories/@secondLevelCategory.Name">
                                 <i class="fa fa-fw fa-clock-o"></i> @secondLevelCategory.Name
                             </a>
                         </li>
@@ -39,53 +39,7 @@
                     }
                 }
             </ul>
-            @*
-
-            <ul class="nav flex-column flex-nowrap sticky-top">
-                <li class="nav-item"><a class="nav-link" href="#">Overview</a></li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="#submenu1" data-toggle="collapse" data-target="#submenu1">Reports</a>
-                    <div class="collapse fade" id="submenu1" aria-expanded="false">
-                        <ul class="flex-column pl-2 nav">
-                            <li class="nav-item"><a class="nav-link py-0" href="#">Orders</a></li>
-                            <li class="nav-item">
-                                <a class="nav-link collapsed py-0" href="#submenu1sub1" data-toggle="collapse" data-target="#submenu1sub1">Customers</a>
-                                <div class="collapse small" id="submenu1sub1" aria-expanded="false">
-                                    <ul class="flex-column nav pl-4">
-                                        <li class="nav-item">
-                                            <a class="nav-link p-0" href="">
-                                                <i class="fa fa-fw fa-clock-o"></i> Daily
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link p-0" href="">
-                                                <i class="fa fa-fw fa-dashboard"></i> Dashboard
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link p-0" href="">
-                                                <i class="fa fa-fw fa-bar-chart"></i> Charts
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link p-0" href="">
-                                                <i class="fa fa-fw fa-compass"></i> Areas
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="nav-item"><a class="nav-link" href="#">Analytics</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Export</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
-            </ul>
-                *@
+          
         </div>
         <!--End Sidebar-->
 }
@@ -121,9 +75,11 @@
                     <tr>
                         @*
                             <td>@(string.IsNullOrEmpty(product.ThumbnailFileName) ? "<i>No image</i>" : "<img src=\"" + @product.ThumbnailFileName + "\" />"))</td>
-                        *@
+                        *@                            
+                        <td><img src="@product.ThumbnailFileName"/></td>
+
                         <td></td>
-                        <td>@product.Name</td>
+                        <td><a href="/Items/@product.Id">@product.Name</a></td>
                         <td>@product.Description</td>
                         <td>@product.Price</td>
                         <td>

@@ -1,0 +1,33 @@
+﻿@page "{Id=0}"
+@using System.Security.Claims;
+@using LSSD.StoreFront.DB;
+@using LSSD.StoreFront.Lib;
+@model LSSDStoreFront_FrontEnd.Pages.CategoriesModel
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<h1>Categories</h1>
+
+
+@{
+    string categoryIdString = RouteData.Values["Id"].ToString();
+    int categoryID = categoryIdString.ToInt();
+    
+    var category = Model.Inventory.ItemsFromCategory(categoryID);
+    
+}
+
+@category
+
+@* 
+    need to loop through the products in each category
+
+    Model.Inventory.Item(productId).Name;  *@
+
+<h1>Items </h1>
+
+<p>Item = @category</p>
+<p>ID = @category</p>
+
+
