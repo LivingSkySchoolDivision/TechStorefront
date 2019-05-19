@@ -1,4 +1,5 @@
 ﻿using LSSD.StoreFront.Lib;
+using LSSD.StoreFront.Lib.UserAccounts;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +16,7 @@ namespace LSSD.StoreFront.DB.userfriendly
             }
         }
 
-        public void PlaceNewOrder(User user, BudgetAccountNumber accountNumber, List<ShoppingCartItem> items)
+        public void PlaceNewOrder(UserThumbprint UserThumbprint, BudgetAccountNumber AccountNumber, List<ShoppingCartItem> Items, string Notes)
         {
             // Create a new order object
         }

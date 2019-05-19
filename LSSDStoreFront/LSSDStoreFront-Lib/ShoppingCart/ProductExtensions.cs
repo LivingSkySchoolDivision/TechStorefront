@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LSSD.StoreFront.Lib.UserAccounts;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,22 +8,22 @@ namespace LSSD.StoreFront.Lib
     public static class ProductExtensions
     {
 
-        public static ShoppingCartItem ToShoppingCartItem(this Product Product, User user)
+        public static ShoppingCartItem ToShoppingCartItem(this Product Product, UserThumbprint userthumbprint)
         {
-            return ToShoppingCartItem(Product, user, 1);
+            return ToShoppingCartItem(Product, userthumbprint, 1);
         }
 
-        public static ShoppingCartItem ToShoppingCartItem(this Product Product, User user, int Quantity)
+        public static ShoppingCartItem ToShoppingCartItem(this Product Product, UserThumbprint userthumbprint, int Quantity)
         {
             if (Product != null)
             {
-                if (user != null)
+                if (!string.IsNullOrEmpty(userthumbprint.Value))
                 {
                     return new ShoppingCartItem()
                     {
                         ProductId = Product.Id,
                         Product = Product,
-                        UserId = user.Id,
+                        UserThumbprint = userthumbprint.Value,
                         Quantity = Quantity
                     };
                 } else

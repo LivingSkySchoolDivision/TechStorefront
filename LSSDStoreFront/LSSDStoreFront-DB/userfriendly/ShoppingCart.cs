@@ -1,5 +1,6 @@
 ﻿using LSSD.StoreFront.DB.repositories;
 using LSSD.StoreFront.Lib;
+using LSSD.StoreFront.Lib.UserAccounts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +18,27 @@ namespace LSSD.StoreFront.DB
             }
         }
 
+        public decimal TotalCost
+        {
+            get
+            {
+                decimal returnMe = (decimal)0;
+                foreach(ShoppingCartItem item in this.Items)
+                {
+                    if (item.Product != null)
+                    {
+                        returnMe += (item.Product.Price * item.Quantity);
+                    }                    
+                }
+                return returnMe;
+            }
+        }
+
         // <product ID, item object>
         private readonly Dictionary<int, ShoppingCartItem> _items = new Dictionary<int, ShoppingCartItem>();
 
         private readonly DatabaseContext _dbContext;
-        private readonly User _user;
+        private readonly UserThumbprint _userThumbPrint;
         private readonly ShoppingCartItemRepository _shoppingCartItemRepository;
         private readonly ProductRepository _productRepository;        
                 
@@ -33,18 +50,17 @@ namespace LSSD.StoreFront.DB
             }
         }
         
-        public ShoppingCart(DatabaseContext DatabaseContext, User UserAccount)
+        public ShoppingCart(DatabaseContext DatabaseContext, string UserAccount)
         {
             this._dbContext = DatabaseContext;
-            this._user = UserAccount;
-
+            this._userThumbPrint = new UserThumbprint(UserAccount);
             this._shoppingCartItemRepository = new ShoppingCartItemRepository(this._dbContext);
             this._productRepository = new ProductRepository(this._dbContext);
 
             this._items = new Dictionary<int, ShoppingCartItem>();
 
             // Load this user's shopping cart
-            foreach (ShoppingCartItem sci in _shoppingCartItemRepository.GetAllForUser(UserAccount))
+            foreach (ShoppingCartItem sci in _shoppingCartItemRepository.GetAllForUser(this._userThumbPrint))
             {
                 this.AddItem(sci);
             }
@@ -52,7 +68,7 @@ namespace LSSD.StoreFront.DB
 
         public void Save()
         {
-            _shoppingCartItemRepository.UpdateUserCartItems(_user, this._items.Values.ToList<ShoppingCartItem>());
+            _shoppingCartItemRepository.UpdateUserCartItems(this._userThumbPrint, this._items.Values.ToList<ShoppingCartItem>());
         }
 
         // ********************************************************
@@ -82,7 +98,7 @@ namespace LSSD.StoreFront.DB
                         Product p = _productRepository.Get(ProductId);
                         if (p != null)
                         {
-                            _items.Add(p.Id, p.ToShoppingCartItem(this._user, Quantity));
+                            _items.Add(p.Id, p.ToShoppingCartItem(_userThumbPrint, Quantity));
                         }
                     }
                 }
@@ -97,7 +113,7 @@ namespace LSSD.StoreFront.DB
                 {
                     if (!_items.ContainsKey(product.Id))
                     {
-                        _items.Add(product.Id, product.ToShoppingCartItem(this._user, 0));
+                        _items.Add(product.Id, product.ToShoppingCartItem(this._userThumbPrint, 0));
                     }
 
                     _items[product.Id].Quantity += Quantity;

@@ -9,6 +9,6 @@ namespace LSSD.StoreFront.Lib
         public int Id { get; set; }
         public string DisplayName { get; set; }
         public string AccountNumber { get; set; }
-        public int OwnerID { get; set; }        
+        public string UserThumbprint { get; set; }        
     }
 }

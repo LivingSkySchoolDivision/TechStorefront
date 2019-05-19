@@ -1,5 +1,6 @@
 ﻿using LSSD.StoreFront.DB.repositories;
 using LSSD.StoreFront.Lib;
+using LSSD.StoreFront.Lib.UserAccounts;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -28,7 +29,7 @@ namespace LSSD.StoreFront.DB.repositories
 
             return new ShoppingCartItem()
             {
-                UserId = dataReader["UserId"].ToString().ToInt(),
+                UserThumbprint = dataReader["UserThumbprint"].ToString(),
                 ProductId = productID,
                 Quantity = dataReader["Quantity"].ToString().ToInt(),
                 Product = product
@@ -70,10 +71,10 @@ namespace LSSD.StoreFront.DB.repositories
             {
                 Connection = connection,
                 CommandType = CommandType.Text,
-                CommandText = "INSERT INTO ShoppingCartItems(UserId, ProductId, Quantity) VALUES(@USERID, @PRODUCTID, @QUANTITY)"
+                CommandText = "INSERT INTO ShoppingCartItems(UserThumbprint, ProductId, Quantity) VALUES(@USERTHUMB, @PRODUCTID, @QUANTITY)"
             })
             {
-                sqlCommand.Parameters.AddWithValue("USERID", obj.UserId);
+                sqlCommand.Parameters.AddWithValue("USERTHUMB", obj.UserThumbprint);
                 sqlCommand.Parameters.AddWithValue("PRODUCTID", obj.ProductId);
                 sqlCommand.Parameters.AddWithValue("QUANTITY", obj.Quantity);
                 sqlCommand.Connection.Open();
@@ -83,7 +84,7 @@ namespace LSSD.StoreFront.DB.repositories
         }
 
 
-        public List<ShoppingCartItem> GetAllForUser(int UserID)
+        public List<ShoppingCartItem> GetAllForUser(UserThumbprint UserThumbprint)
         {
             List<ShoppingCartItem> returnMe = new List<ShoppingCartItem>();
 
@@ -93,10 +94,10 @@ namespace LSSD.StoreFront.DB.repositories
                 {
                     Connection = connection,
                     CommandType = CommandType.Text,
-                    CommandText = "SELECT * FROM ShoppingCartItems WHERE UserId=@USERID"
+                    CommandText = "SELECT * FROM ShoppingCartItems WHERE UserThumbprint=@USERID"
                 })
                 {
-                    sqlCommand.Parameters.AddWithValue("USERID", UserID);
+                    sqlCommand.Parameters.AddWithValue("USERID", UserThumbprint.Value);
                     sqlCommand.Connection.Open();
                     SqlDataReader dbDataReader = sqlCommand.ExecuteReader();
 
@@ -118,46 +119,36 @@ namespace LSSD.StoreFront.DB.repositories
 
             return returnMe;
         }
-
-        public List<ShoppingCartItem> GetAllForUser(User user)
-        {
-            if (user == null)
-            {
-                return new List<ShoppingCartItem>();
-            }
-
-            return GetAllForUser(user.Id);
-        }
-
-        public void ClearForUser(User user)
+        
+        public void ClearForUser(UserThumbprint userThumbprint)
         {
             using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
             {
-                ClearForUser(user, connection);
+                ClearForUser(userThumbprint, connection);
             }
         }
 
-        public void ClearForUser(User user, SqlConnection connection)
+        public void ClearForUser(UserThumbprint userThumbprint, SqlConnection connection)
         {
             using (SqlCommand sqlCommand = new SqlCommand
             {
                 Connection = connection,
                 CommandType = CommandType.Text,
-                CommandText = "DELETE FROM ShoppingCartItems WHERE UserId=@USERID;"
+                CommandText = "DELETE FROM ShoppingCartItems WHERE UserThumbprint=@USERID;"
             })
             {
-                sqlCommand.Parameters.AddWithValue("USERID", user.Id);
+                sqlCommand.Parameters.AddWithValue("USERID", userThumbprint.Value);
                 sqlCommand.Connection.Open();
                 sqlCommand.ExecuteNonQuery();
                 sqlCommand.Connection.Close();
             }            
         }
 
-        public void UpdateUserCartItems(User user, List<ShoppingCartItem> items)
+        public void UpdateUserCartItems(UserThumbprint userThumbprint, List<ShoppingCartItem> items)
         {
             using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
             {
-                this.ClearForUser(user, connection);
+                this.ClearForUser(userThumbprint, connection);
                 this.Create(items, connection);
             }
         }
