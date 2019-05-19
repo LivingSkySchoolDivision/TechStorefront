@@ -12,7 +12,7 @@ namespace LSSDStoreFront_FrontEnd.Pages
 {
     public class MarkTestModel : PageModel
     {
-        private DatabaseContext dbContext;
+        private readonly DatabaseContext dbContext;
         public ShoppingCart ShoppingCart;
         public Inventory Inventory;
 

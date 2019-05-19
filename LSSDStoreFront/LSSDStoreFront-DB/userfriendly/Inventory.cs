@@ -12,7 +12,7 @@ namespace LSSD.StoreFront.DB
         public List<ProductCategory> AllCategories {
             get
             {
-                return this._allCategories.Values.ToList();
+                return this._allCategories.Values.OrderBy(x => x.Name).ToList();
             }
         }
 
@@ -20,7 +20,7 @@ namespace LSSD.StoreFront.DB
         {
             get
             {
-                return this._allCategories.Values.Where(x => x.IsTopLevel).ToList();
+                return this._allCategories.Values.Where(x => x.IsTopLevel).OrderBy(x => x.Name).ToList();
             }
         }
 
@@ -94,7 +94,7 @@ namespace LSSD.StoreFront.DB
             }
             else
             {
-                return _allItems.Values.Where(x => x.CategoryId == CategoryId).ToList();
+                return _allItems.Values.Where(x => x.CategoryId == CategoryId).OrderBy(x => x.Name).ToList();
             }
         }
 

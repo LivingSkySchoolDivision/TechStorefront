@@ -1,9 +1,35 @@
-﻿<!DOCTYPE html>
+﻿@using LSSD.StoreFront.DB;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration config
+@{
+    bool UserAccessGranted = false;
+    if (User.Identity.IsAuthenticated)
+    {
+        if (User.HasClaim("groups", "60783dd9-4154-478f-a23c-b9960418f109"))
+        {
+            UserAccessGranted = true;
+        }
+    }
+
+    string UserDisplayName = string.Empty;
+    string shoppingCartItemCountDisplay = string.Empty;
+
+    if (UserAccessGranted)
+    {
+        UserDisplayName = ((System.Security.Claims.ClaimsIdentity)User.Identity).Claims.Where(c => c.Type == "name").FirstOrDefault().Value;
+        DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString("InternalDatabase"));
+        ShoppingCart ShoppingCart = new ShoppingCart(dbContext, User.Identity.Name);
+        int shoppingCartItems = ShoppingCart.TotalItems;
+        shoppingCartItemCountDisplay = shoppingCartItems > 0 ? "(" + shoppingCartItems + ")" : string.Empty;
+    }
+}
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] Living Sky Storefront</title>
+    <title>@ViewData["Title"] - Living Sky Technology Storefront</title>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -20,24 +46,40 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Living Sky Storefront</a>
+            <div class="container" style="width: 100%;">
+                <img src="/Images/lssd.png" style="width: 32px; height: 32px; margin-right: 5px;" /><a class="navbar-brand" style="font-weight: bold;" asp-area="" asp-page="/Index">Living Sky Technology Storefront</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
+                        <!--
+                            <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
+                        -->
                     </ul>
                 </div>
 
                 <div class="d-flex flex-row-reverse bd-highlight">
+                    <ul class="navbar-nav flex-grow-1">
+                        @if (UserAccessGranted)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/ShoppingCart">Shopping Cart @shoppingCartItemCountDisplay</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Orders">Orders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/AccountNumbers">Account Numbers</a>
+                            </li>
+                            <li class="nav-item">
+                                <b class="nav-link text-dark">@UserDisplayName</b>
+                            </li>
+                        }
+                    </ul>
                     <!--Put search here-->
                     <!--My Account here-->
                 </div>
@@ -47,27 +89,19 @@
     </header>
     <div class="container-fluid">
         <partial name="_CookieConsentPartial" />
-        <main role="main" class="pb-3">
-                @RenderSection("SideBar", required:false)
-                <div class="col p-0">
-
-
-                    <div class="p-3 content">
-                        <h2>
-                            <a href="" data-target="#sidebar" data-toggle="collapse" class="d-md-none"><i class="fa fa-bars"></i></a>
-                            Content
-                        </h2>
-
-                        @RenderBody()
-
-                    </div>
+        <main role="main" class="pb-3" style="min-width: 1000px; width: 75%; margin: 0 auto;">
+            @RenderSection("SideBar", required: false)
+            <div class="col p-0">
+                <div class="p-3 content">
+                    @RenderBody()
                 </div>
-</main>
+            </div>
+        </main>
     </div>
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2019 - LSSDStoreFront_FrontEnd - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            &copy; 2019 Living Sky School Division No. 202
         </div>
     </footer>
 

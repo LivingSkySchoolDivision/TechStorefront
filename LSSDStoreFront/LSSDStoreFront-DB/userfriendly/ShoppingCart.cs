@@ -34,6 +34,14 @@ namespace LSSD.StoreFront.DB
             }
         }
 
+        public int TotalItems
+        {
+            get
+            {
+                return this.Items.Sum(x => x.Quantity);
+            }
+        }
+
         // <product ID, item object>
         private readonly Dictionary<int, ShoppingCartItem> _items = new Dictionary<int, ShoppingCartItem>();
 
@@ -221,8 +229,8 @@ namespace LSSD.StoreFront.DB
             }
         }
 
-               
-       
+
+
         // ********************************************************
         // * Clear Items
         // ********************************************************
@@ -262,5 +270,24 @@ namespace LSSD.StoreFront.DB
             _items.Clear();
         }
 
+
+        // ********************************************************
+        // * Adjust quantities
+        // ********************************************************
+
+        public void UpdateQuantity(int ProductId, int NewQuantity)
+        {
+            if (ProductId > 0)
+            {
+                if (this._items.ContainsKey(ProductId))
+                {
+                    this._items[ProductId].Quantity = NewQuantity;
+                } else
+                {
+                    AddItem(ProductId, NewQuantity);
+                }
+
+            }
+        }
     }
 }
