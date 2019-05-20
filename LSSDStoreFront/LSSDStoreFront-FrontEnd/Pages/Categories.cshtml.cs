@@ -13,8 +13,8 @@ namespace LSSDStoreFront_FrontEnd.Pages
     public class CategoriesModel : PageModel
     {
         private DatabaseContext dbContext;
-        public ShoppingCart ShoppingCart;
-        public Inventory Inventory;
+        public UserFriendlyShoppingCart ShoppingCart;
+        public UserFriendlyInventory Inventory;
 
         [BindProperty(SupportsGet = true)]
         public string Id { get; set; }
@@ -22,13 +22,13 @@ namespace LSSDStoreFront_FrontEnd.Pages
         public void OnGet()
         {
             
-            ShoppingCart = new ShoppingCart(dbContext, User.Identity.Name);
+            ShoppingCart = new UserFriendlyShoppingCart(dbContext, User.Identity.Name);
         }
 
         public CategoriesModel(IConfiguration config)
         {
             dbContext = new DatabaseContext(config.GetConnectionString("InternalDatabase"));
-            Inventory = new Inventory(dbContext);
+            Inventory = new UserFriendlyInventory(dbContext);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace LSSD.StoreFront.FrontEnd.Pages
 {
     public class IndexModel : PageModel
     {
-        public Inventory Inventory;
+        public UserFriendlyInventory Inventory;
         
         public void OnGet()
         {            
@@ -22,7 +22,7 @@ namespace LSSD.StoreFront.FrontEnd.Pages
         {
             // set up a database connection            
             DatabaseContext dbConnection = new DatabaseContext(config.GetConnectionString("InternalDatabase"));
-            Inventory = new Inventory(dbConnection);
+            Inventory = new UserFriendlyInventory(dbConnection);
 
         }
     }

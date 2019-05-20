@@ -13,16 +13,16 @@ namespace LSSDStoreFront_FrontEnd.Pages
     public class ItemsModel : PageModel
     {
         private DatabaseContext dbContext;
-        public ShoppingCart ShoppingCart;
-        public Inventory Inventory;
+        public UserFriendlyShoppingCart ShoppingCart;
+        public UserFriendlyInventory Inventory;
 
         [BindProperty(SupportsGet = true)]
         public string Id { get; set; }
 
         public void OnGet()
         {
-            Inventory = new Inventory(dbContext);
-            ShoppingCart = new ShoppingCart(dbContext, User.Identity.Name);
+            Inventory = new UserFriendlyInventory(dbContext);
+            ShoppingCart = new UserFriendlyShoppingCart(dbContext, User.Identity.Name);
         }
 
         public ItemsModel(IConfiguration config)

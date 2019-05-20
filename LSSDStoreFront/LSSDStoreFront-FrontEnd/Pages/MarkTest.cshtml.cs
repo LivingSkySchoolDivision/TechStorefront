@@ -13,13 +13,13 @@ namespace LSSDStoreFront_FrontEnd.Pages
     public class MarkTestModel : PageModel
     {
         private readonly DatabaseContext dbContext;
-        public ShoppingCart ShoppingCart;
-        public Inventory Inventory;
+        public UserFriendlyShoppingCart ShoppingCart;
+        public UserFriendlyInventory Inventory;
 
         public void OnGet()
         {
-            Inventory = new Inventory(dbContext);
-            ShoppingCart = new ShoppingCart(dbContext, User.Identity.Name);
+            Inventory = new UserFriendlyInventory(dbContext);
+            ShoppingCart = new UserFriendlyShoppingCart(dbContext, User.Identity.Name);
         }
 
         public MarkTestModel(IConfiguration config)

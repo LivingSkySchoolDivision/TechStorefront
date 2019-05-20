@@ -8,7 +8,7 @@ using System.Text;
 
 namespace LSSD.StoreFront.DB
 {
-    public class ShoppingCart
+    public class UserFriendlyShoppingCart
     {     
         public IReadOnlyList<ShoppingCartItem> Items
         {
@@ -58,7 +58,7 @@ namespace LSSD.StoreFront.DB
             }
         }
         
-        public ShoppingCart(DatabaseContext DatabaseContext, string UserAccount)
+        public UserFriendlyShoppingCart(DatabaseContext DatabaseContext, string UserAccount)
         {
             this._dbContext = DatabaseContext;
             this._userThumbPrint = new UserThumbprint(UserAccount);

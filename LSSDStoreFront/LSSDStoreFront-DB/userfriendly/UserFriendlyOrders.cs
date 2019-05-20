@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LSSD.StoreFront.DB.userfriendly
+namespace LSSD.StoreFront.DB.Orders
 {
-    public class Orders
+    public class UserFriendlyOrders
     {
         public IReadOnlyList<Order> OrderHistory
         {
@@ -20,10 +20,6 @@ namespace LSSD.StoreFront.DB.userfriendly
         {
             // Create a new order object
         }
-
-
-
-
 
     }
 }

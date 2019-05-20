@@ -8,7 +8,6 @@ namespace LSSD.StoreFront.Lib
     {
         public int Id { get; set; }
         public string UserThumbprint { get; set; } 
-        public int BudgetAccountNumberId { get; set; }
         public DateTime OrderDate { get; set; }
         public string SubmittedBy { get; set; }
         public string BudgetAccountNumber { get; set; }

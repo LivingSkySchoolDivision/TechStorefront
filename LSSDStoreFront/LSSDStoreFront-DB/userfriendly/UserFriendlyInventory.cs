@@ -7,7 +7,7 @@ using System.Text;
 
 namespace LSSD.StoreFront.DB
 {
-    public class Inventory
+    public class UserFriendlyInventory
     {
         public List<ProductCategory> AllCategories {
             get
@@ -31,14 +31,14 @@ namespace LSSD.StoreFront.DB
             }
         }
                
-        private DatabaseContext _dbContext;
-        private Dictionary<int, Product> _allItems = new Dictionary<int, Product>();
-        private Dictionary<int, ProductCategory> _allCategories = new Dictionary<int, ProductCategory>(); 
+        private readonly DatabaseContext _dbContext;
+        private readonly Dictionary<int, Product> _allItems = new Dictionary<int, Product>();
+        private readonly Dictionary<int, ProductCategory> _allCategories = new Dictionary<int, ProductCategory>(); 
 
         private readonly Product _nullProduct = new Product();
         private readonly ProductCategory _nullProductCategory = new ProductCategory();
         
-        public Inventory(DatabaseContext DatabaseContext)
+        public UserFriendlyInventory(DatabaseContext DatabaseContext)
         {
             this._dbContext = DatabaseContext;      
 
