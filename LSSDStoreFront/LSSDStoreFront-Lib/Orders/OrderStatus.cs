@@ -4,8 +4,9 @@ using System.Text;
 
 namespace LSSD.StoreFront.Lib
 {
-    public enum OrderStatus
+    public enum OrderStatuses
     {
+        Unknown,
         Received,
         Fulfilled,
         Shipped,

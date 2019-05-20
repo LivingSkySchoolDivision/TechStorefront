@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LSSDStoreFront_FrontEnd.Pages
 {
-    public class AccountNumbersModel : PageModel
+    public class OrderModel : PageModel
     {
         public void OnGet()
         {

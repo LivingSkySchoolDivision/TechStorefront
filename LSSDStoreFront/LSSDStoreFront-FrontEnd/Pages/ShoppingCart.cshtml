@@ -12,7 +12,7 @@
     </p>
     <div style="text-align: right;">
         <form method="post" asp-page-handler="ClearCart" style="display: inline;">
-            <button class="btn btn-sm btn-danger small">Clear Cart</button>
+            <button class="btn btn-sm btn-outline-danger small">Clear Cart</button>
         </form>
     </div>
     <br/>
@@ -32,11 +32,11 @@
                     <form method="post" asp-page-handler="UpdateQuantity" style="display: inline;">
                         <input type="hidden" name="productID" value="@item.ProductId" />
                         <input class="form-control" type="text" maxlength="4" style="width: 60px;text-align:center; display: inline;" name="quantity" value="@item.Quantity" />
-                        <button class="btn btn-sm btn-primary small">Update quantity</button>
+                        <button class="btn btn-sm btn-link small">Update quantity</button>
                     </form>
                     <form method="post" asp-page-handler="RemoveItem" style="display: inline;">
                         <input type="hidden" name="productID" value="@item.ProductId" />
-                        <button class="btn btn-sm btn-danger small">Remove</button>
+                        <button class="btn btn-sm btn-link small">Remove</button>
                     </form>
                 </td>
                 <td class="text-right">$@item.Product.Price</td>
@@ -46,6 +46,13 @@
         }
         <tr>
             <td colspan="5" class="text-right"><b>Grand Total:</b> $@Model.ShoppingCart.TotalCost.ToString("#,##0.00")</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="text-right">
+                <form method="post" asp-page-handler="Checkout" style="display: inline;">
+                    <button class="btn btn-success btn-lg">Checkout</button>
+                </form>
+            </td>
         </tr>
     </table>
 </div>

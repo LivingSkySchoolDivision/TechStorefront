@@ -8,14 +8,10 @@ namespace LSSD.StoreFront.Lib
     {
         public int Id { get; set; }
         public int OrderId { get; set; }
-        public int ItemId { get; set; }
-        public string ItemName { get; set; }
-        public int Quantity { get; set; }
-        public decimal PricePerItem { get; set; }
-        public decimal TotalPrice { get
-            {
-                return this.PricePerItem * this.Quantity;
-            }
-        }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public int ProductId { get; set; }
+        public bool Fulfilled { get; set; }
+        public DateTime FulfilledDate { get; set; }
     }
 }

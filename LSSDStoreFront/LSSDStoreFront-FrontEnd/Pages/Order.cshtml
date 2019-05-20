@@ -1,0 +1,114 @@
+﻿@page "{Id:int?}"
+@using LSSD.StoreFront.Lib;
+@using LSSD.StoreFront.FrontEnd.Extensions;
+@using LSSD.StoreFront.DB;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration config
+@model LSSDStoreFront_FrontEnd.Pages.OrderModel
+@{
+    ViewData["Title"] = "Orders";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString("InternalDatabase"));
+    UserFriendlyOrders Orders = new UserFriendlyOrders(dbContext, User.Identity.Name);
+
+    Order order = Orders.Get(RouteData.Values["Id"].ToString().ToInt());
+}
+
+@if (order != null)
+{
+    <h1>Order @order.OrderNumber</h1>
+    <section style="margin-left: 10px;">
+        <table class="table table-hover table-sm">
+            <tr>
+                <th>Order Date</th>
+                <td>@order.OrderDate.ToLongDateString() @order.OrderDate.ToLongTimeString()</td>
+            </tr>
+            <tr>
+                <th>Order Status</th>
+                <td>@order.LastKnownStatus</td>
+            </tr>
+            <tr>
+                <th>Order submitted by</th>
+                <td>@order.SubmittedBy</td>
+            </tr>
+            <tr>
+                <th>Budget Account Number</th>
+                <td>@order.BudgetAccountNumber</td>
+            </tr>
+            <tr>
+                <th>Total Items</th>
+                <td>@order.OrderTotalItems</td>
+            </tr>
+            <tr>
+                <th>Grand Total Price</th>
+                <td>$@order.OrderGrandTotal</td>
+            </tr>
+            <tr>
+                <th>Customer Notes</th>
+                <td>@order.CustomerNotes</td>
+            </tr>
+        </table>
+    </section>
+    <br /><br />
+
+    <h2>Order Status</h2>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th class="text-left">Date</th>
+                <th class="text-right">Time</th>
+                <th class="text-center">Status</th>
+                <th class="text-center">Updated by</th>
+                <th class="text-right">Notes</th>
+            </tr>
+        </thead>
+        @foreach (OrderStatusDetail detail in order.StatusDetails.OrderBy(x => x.Timestamp))
+        {
+            <tr>
+                <td class="text-left">@detail.Timestamp.ToLongDateString()</td>
+                <td class="text-right">@detail.Timestamp.ToLongTimeString()</td>
+                <td class="text-center">@detail.Status</td>
+                <td class="text-center">@detail.UpdatedBy</td>
+                <td class="text-right">@detail.Notes</td>
+            </tr>
+        }
+
+    </table>
+    <br /><br />
+    <h2>Order Items</h2>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th class="text-left">Item Name</th>
+                <th class="text-right">Item Price</th>
+                <th class="text-center">Item Fulfilled</th>
+                <th class="text-right">Fulfilled Date</th>
+            </tr>
+        </thead>
+        @foreach (OrderItem item in order.Items.OrderBy(x => x.Name).ThenBy(x => x.Fulfilled))
+        {
+            string fulfilledDateString = string.Empty;
+            if (item.Fulfilled)
+            {
+                fulfilledDateString = item.FulfilledDate.ToShortDateString();
+            }
+
+            <tr>
+                <td class="text-left">@item.Name</td>
+                <td class="text-right">@item.Price</td>
+                <td class="text-center">@item.Fulfilled.ToYesOrNo()</td>
+                <td class="text-right">@fulfilledDateString</td>
+            </tr>
+        }
+
+    </table>
+
+
+}
+else
+{
+    <h1>Order not found</h1>
+    <p>Sorry!</p>
+}
+

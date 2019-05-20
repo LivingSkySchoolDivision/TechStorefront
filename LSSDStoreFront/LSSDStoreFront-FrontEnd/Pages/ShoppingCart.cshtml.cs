@@ -50,5 +50,10 @@ namespace LSSDStoreFront_FrontEnd.Pages
             ShoppingCart.Save();
             return RedirectToPage("/ShoppingCart");
         }
+
+        public IActionResult OnPostCheckout()
+        {
+            return RedirectToPage("/Checkout");
+        }
     }
 }

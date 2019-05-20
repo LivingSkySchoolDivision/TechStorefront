@@ -1,9 +1,57 @@
 ﻿@page
+@using LSSD.StoreFront.Lib;
+@using LSSD.StoreFront.FrontEnd.Extensions;
+@using LSSD.StoreFront.DB;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration config
 @model LSSDStoreFront_FrontEnd.Pages.OrdersModel
 @{
     ViewData["Title"] = "Orders";
     Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString("InternalDatabase"));
+    UserFriendlyOrders Orders = new UserFriendlyOrders(dbContext, User.Identity.Name);
+    string UserDisplayName = ((System.Security.Claims.ClaimsIdentity)User.Identity).Claims.Where(c => c.Type == "name").FirstOrDefault().Value;
 }
 
-<h1>Orders</h1>
+<h1>@UserDisplayName's Order History</h1>
 
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th class="text-left">Order Date</th>
+            <th class="text-left">Order Number</th>
+            <th class="text-right">Order Total</th>
+            <th class="text-center">Total Items</th>
+            <th class="text-center">Budget Number</th>
+            <th class="text-center">Order Status</th>
+            <th class="text-center">Order Fulfilled?</th>
+            <th class="text-right">Details</th>
+        </tr>
+    </thead>
+
+    @foreach (Order order in Orders.OrderHistory)
+    {
+        <tr>
+            <td class="text-left">@order.OrderDate.ToLongDateString() @order.OrderDate.ToShortTimeString()</td>
+            <td class="text-left">@order.OrderNumber</td>
+            <td class="text-right">$@order.OrderGrandTotal</td>
+            <td class="text-center">@order.OrderTotalItems</td>
+            <td class="text-center">@order.BudgetAccountNumber</td>
+            <td class="text-center">@order.LastKnownStatus</td>
+            <td class="text-center">                
+                        @if (order.OrderFulfilled)
+                        {
+                            <span>Yes</span>
+                        } else
+                        {
+                            <span>No (@order.Items.Count(x => x.Fulfilled) / @order.Items.Count)</span>
+                        }
+                    </td>
+            <td class="text-right"><a href="/Order/@order.Id">View order details</a></td>
+        </tr>
+    }
+
+
+
+</table>
