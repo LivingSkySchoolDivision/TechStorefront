@@ -1,9 +1,71 @@
 ﻿@page
+@using LSSD.StoreFront.Lib;
+@using LSSD.StoreFront.FrontEnd.Extensions;
+@using LSSD.StoreFront.DB;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration config
 @model LSSDStoreFront_FrontEnd.Pages.CheckoutModel
 @{
     ViewData["Title"] = "Checkout";
     Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString("InternalDatabase"));
+    UserFriendlyShoppingCart ShoppingCart = new UserFriendlyShoppingCart(dbContext, User.Identity.Name);
+    string UserDisplayName = ((System.Security.Claims.ClaimsIdentity)User.Identity).Claims.Where(c => c.Type == "name").FirstOrDefault().Value;
+
 }
 
 <h1>Checkout</h1>
 
+<h2>Shopping Cart Items</h2>
+<table class="table">
+    <tr>
+        <th class="text-left">Item</th>
+        <th class="text-right">Item Price</th>
+        <th class="text-center">Quantity</th>
+        <th class="text-right">Total Price</th>
+    </tr>
+    @foreach (ShoppingCartItem item in ShoppingCart.Items)
+    {
+        <tr>
+            <td class="text-left">@item.Product.Name</td>
+            <td class="text-right">$@item.Product.Price</td>
+            <td class="text-center">&times;@item.Quantity</td>
+            <td class="text-right">$@item.TotalPrice.ToString("#,##0.00")</td>
+        </tr>
+    }
+    <tr>
+        <td colspan="5" class="text-right"><b>Order Total:</b> $@ShoppingCart.TotalCost.ToString("#,##0.00")</td>
+    </tr>
+    <tr>
+        <td colspan="5" class="text-right">
+            <form method="post" asp-page-handler="BackToCart" style="display: inline;">
+                <button class="btn btn-outline-warning btn-sm">Edit cart</button>
+            </form>
+        </td>
+    </tr>
+</table>
+<br />
+<form  class="needs-validation" method="post" asp-page-handler="PlaceOrder" style="display: inline;">
+    <h2>Budget Account Number</h2>
+    <p>
+        <input name="txtAccountNum" class="form-control" type="text" placeholder="Your budget account number here" required>
+    </p>
+    <h5>Need to use multiple account numbers?</h5>
+    <p>
+        Each order may only be associated with <b>one</b> budget account number. Split your order into multiple smaller orders if you wish to use multiple budget account numbers.
+    </p>
+    <br />
+    <h2>Notes</h2>
+    <p>
+        <textarea name="txtCustomerNotes" class="form-control" id="customerNotes" rows="3"></textarea>
+    </p>
+    <br />
+    <h2>Verify and validate</h2>
+    <p>Please make sure that all above information is correct before submitting your order. </p>
+    <p>Order changes <i>must</i> go through help desk tickets, and may delay your order.</p>
+
+    <div style="text-align: right; width: 100%">
+        <button class="btn btn-success btn-lg">Place Order</button>
+    </div>
+</form>

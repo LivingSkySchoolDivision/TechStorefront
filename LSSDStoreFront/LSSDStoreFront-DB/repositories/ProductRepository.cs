@@ -13,7 +13,7 @@ namespace LSSD.StoreFront.DB.repositories
         // Connection string to use when talking to the database.
         // Saved when passed from the constructor when a new repository object is created.
         // Retained for the lifetime of this object.
-        private DatabaseContext _dbConnection;
+        private readonly DatabaseContext _dbConnection;
 
         // Base SQL query to use. Methods below may add more things to this (like " WHERE" clauses), or
         // they may use their own queries.

@@ -1,4 +1,4 @@
-﻿@page "{Id:int?}"
+﻿@page "{Id}"
 @using LSSD.StoreFront.Lib;
 @using LSSD.StoreFront.FrontEnd.Extensions;
 @using LSSD.StoreFront.DB;
@@ -12,14 +12,18 @@
     DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString("InternalDatabase"));
     UserFriendlyOrders Orders = new UserFriendlyOrders(dbContext, User.Identity.Name);
 
-    Order order = Orders.Get(RouteData.Values["Id"].ToString().ToInt());
+    Order order = Orders.Get(RouteData.Values["Id"].ToString());
 }
 
 @if (order != null)
 {
-    <h1>Order @order.OrderNumber</h1>
+    <h1>Order Details</h1>
     <section style="margin-left: 10px;">
         <table class="table table-hover table-sm">
+            <tr>
+                <th>Order Thumbprint</th>
+                <td>@order.OrderThumbprint</td>
+            </tr>
             <tr>
                 <th>Order Date</th>
                 <td>@order.OrderDate.ToLongDateString() @order.OrderDate.ToLongTimeString()</td>
@@ -42,7 +46,7 @@
             </tr>
             <tr>
                 <th>Grand Total Price</th>
-                <td>$@order.OrderGrandTotal</td>
+                <td>$@order.OrderGrandTotal.ToString("#,##0.00")</td>
             </tr>
             <tr>
                 <th>Customer Notes</th>
@@ -82,28 +86,21 @@
             <tr>
                 <th class="text-left">Item Name</th>
                 <th class="text-right">Item Price</th>
-                <th class="text-center">Item Fulfilled</th>
-                <th class="text-right">Fulfilled Date</th>
+                <th class="text-center">Quantity</th>
+                <th class="text-right">Total Price</th>
             </tr>
         </thead>
-        @foreach (OrderItem item in order.Items.OrderBy(x => x.Name).ThenBy(x => x.Fulfilled))
+        @foreach (OrderItem item in order.Items.OrderBy(x => x.Name))
         {
-            string fulfilledDateString = string.Empty;
-            if (item.Fulfilled)
-            {
-                fulfilledDateString = item.FulfilledDate.ToShortDateString();
-            }
-
             <tr>
                 <td class="text-left">@item.Name</td>
-                <td class="text-right">@item.Price</td>
-                <td class="text-center">@item.Fulfilled.ToYesOrNo()</td>
-                <td class="text-right">@fulfilledDateString</td>
+                <td class="text-right">$@item.ItemPrice.ToString("#,##0.00")</td>
+                <td class="text-center">@item.Quantity</td>
+                <td class="text-right">$@item.TotalPrice.ToString("#,##0.00")</td>
             </tr>
         }
 
     </table>
-
 
 }
 else

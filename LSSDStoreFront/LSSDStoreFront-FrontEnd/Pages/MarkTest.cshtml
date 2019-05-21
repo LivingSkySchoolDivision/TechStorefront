@@ -25,25 +25,10 @@
             </tr>
         }
     </table>
-*@
 
-<h1>My Shopping Cart</h1>
-<I>@Model.ShoppingCart.Items.Count Items</I>
-<table class="table">
-    <tr>
-        <th>Item</th>
-        <th>Quantity</th>
-        <th>Price (per item)</th>
-        <th>Price (total)</th>
-    </tr>
-    @foreach (ShoppingCartItem item in Model.ShoppingCart.Items)
-    {
-        <tr>
-            <td>@item.Product.Name</td>
-            <td>@item.Quantity</td>
-            <td>$@item.Product.Price</td>
-            <td>$@item.TotalPrice.ToString("#,##0.00")</td>
-        </tr>
-    }
-</table>
+*@
+<br/><br/>
+<form method="post" asp-page-handler="AddTestItems" style="display: inline;">
+    <button class="btn btn-lg btn-danger small">Add test items to shopping cart</button>
+</form>
 

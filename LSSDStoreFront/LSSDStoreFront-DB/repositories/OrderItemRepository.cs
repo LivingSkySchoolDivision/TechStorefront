@@ -9,7 +9,7 @@ namespace LSSD.StoreFront.DB.repositories
 {
     class OrderItemRepository
     {
-        private DatabaseContext _dbConnection;
+        private readonly DatabaseContext _dbConnection;
         public OrderItemRepository(DatabaseContext DatabaseConnection)
         {
             this._dbConnection = DatabaseConnection;
@@ -19,17 +19,16 @@ namespace LSSD.StoreFront.DB.repositories
         {
             return new OrderItem()
             {
-                Id = dataReader["Id"].ToString().ToInt(),
-                OrderId = dataReader["OrderId"].ToString().ToInt(),
+                OrderThumbprint = dataReader["OrderThumbprint"].ToString(),
                 Name = dataReader["ItemName"].ToString(),
-                Price = dataReader["ItemPrice"].ToString().ToDecimal(),
+                ItemPrice = dataReader["ItemPrice"].ToString().ToDecimal(),
+                TotalPrice = dataReader["TotalPrice"].ToString().ToDecimal(),
                 ProductId = dataReader["ProductId"].ToString().ToInt(),
-                Fulfilled = dataReader["Fulfilled"].ToString().ToBool(),
-                FulfilledDate = dataReader["FulfilledDate"].ToString().ToDateTime()
+                Quantity = dataReader["Quantity"].ToString().ToInt()
             };
         }
         
-        public List<OrderItem> GetForOrder(int OrderId)
+        public List<OrderItem> GetForOrder(string OrderThumbprint)
         {
             List<OrderItem> returnMe = new List<OrderItem>();
 
@@ -39,10 +38,10 @@ namespace LSSD.StoreFront.DB.repositories
                 {
                     Connection = connection,
                     CommandType = CommandType.Text,
-                    CommandText = "SELECT * FROM OrderItems WHERE OrderId=@ORDERID"
+                    CommandText = "SELECT * FROM OrderItems WHERE OrderThumbprint=@ORDERID"
                 })
                 {
-                    sqlCommand.Parameters.AddWithValue("ORDERID", OrderId);
+                    sqlCommand.Parameters.AddWithValue("ORDERID", OrderThumbprint);
                     sqlCommand.Connection.Open();
 
                     SqlDataReader dbDataReader = sqlCommand.ExecuteReader();
@@ -65,6 +64,35 @@ namespace LSSD.StoreFront.DB.repositories
             }
 
             return returnMe;
+        }
+
+        public void Create(List<OrderItem> items)
+        {
+            using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
+            {
+                foreach (OrderItem item in items)
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand
+                    {
+                        Connection = connection,
+                        CommandType = CommandType.Text,
+                        CommandText = "INSERT INTO OrderItems(OrderThumbprint, ItemName, ItemPrice, TotalPrice, ProductId, Quantity) " +
+                                                    "VALUES(@OTHUMB, @INAME, @IPRICE, @TPRICE, @PRODID, @QUAN)"
+                    })
+                    {
+                        sqlCommand.Parameters.Clear();
+                        sqlCommand.Parameters.AddWithValue("@OTHUMB", item.OrderThumbprint);
+                        sqlCommand.Parameters.AddWithValue("@INAME", item.Name);
+                        sqlCommand.Parameters.AddWithValue("@IPRICE", item.ItemPrice);
+                        sqlCommand.Parameters.AddWithValue("@TPRICE", item.TotalPrice);
+                        sqlCommand.Parameters.AddWithValue("@PRODID", item.ProductId);
+                        sqlCommand.Parameters.AddWithValue("@QUAN", item.Quantity);
+                        sqlCommand.Connection.Open();
+                        sqlCommand.ExecuteNonQuery();
+                        sqlCommand.Connection.Close();
+                    }
+                }
+            }
         }
     }
 }

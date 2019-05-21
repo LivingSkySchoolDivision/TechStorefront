@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LSSD.StoreFront.Lib.Utilities
 {
-    static class Crypto
+    public static class Crypto
     {
         public static string Hash(string input)
         {

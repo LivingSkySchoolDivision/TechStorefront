@@ -7,8 +7,7 @@ namespace LSSD.StoreFront.Lib
 {
     public class Order
     {
-        public int Id { get; set; }
-        public string OrderNumber { get; set; }
+        public string OrderThumbprint{ get; set; }
         public string UserThumbprint { get; set; } 
         public DateTime OrderDate { get; set; }
         public string SubmittedBy { get; set; }
@@ -26,19 +25,6 @@ namespace LSSD.StoreFront.Lib
             this.StatusDetails = new List<OrderStatusDetail>();
         }
 
-        public bool OrderFulfilled {
-            get
-            {
-                foreach(OrderItem item in this.Items)
-                {
-                    if (item.Fulfilled == false)
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
 
         public string LastKnownStatus
         {

@@ -20,12 +20,10 @@
     <thead>
         <tr>
             <th class="text-left">Order Date</th>
-            <th class="text-left">Order Number</th>
             <th class="text-right">Order Total</th>
             <th class="text-center">Total Items</th>
             <th class="text-center">Budget Number</th>
             <th class="text-center">Order Status</th>
-            <th class="text-center">Order Fulfilled?</th>
             <th class="text-right">Details</th>
         </tr>
     </thead>
@@ -34,21 +32,11 @@
     {
         <tr>
             <td class="text-left">@order.OrderDate.ToLongDateString() @order.OrderDate.ToShortTimeString()</td>
-            <td class="text-left">@order.OrderNumber</td>
-            <td class="text-right">$@order.OrderGrandTotal</td>
+            <td class="text-right">$@order.OrderGrandTotal.ToString("#,##0.00")</td>
             <td class="text-center">@order.OrderTotalItems</td>
             <td class="text-center">@order.BudgetAccountNumber</td>
-            <td class="text-center">@order.LastKnownStatus</td>
-            <td class="text-center">                
-                        @if (order.OrderFulfilled)
-                        {
-                            <span>Yes</span>
-                        } else
-                        {
-                            <span>No (@order.Items.Count(x => x.Fulfilled) / @order.Items.Count)</span>
-                        }
-                    </td>
-            <td class="text-right"><a href="/Order/@order.Id">View order details</a></td>
+            <td class="text-center">@order.LastKnownStatus</td>            
+            <td class="text-right"><a href="/Order/@order.OrderThumbprint">View order details</a></td>
         </tr>
     }
 
