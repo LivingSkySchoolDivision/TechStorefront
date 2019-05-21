@@ -21,6 +21,7 @@ namespace LSSD.StoreFront.Lib
         public bool IsSpecialOrderItem { get; set; }
         public DateTime AvailableFromDate { get; set; }
         public DateTime AvailableToDate { get; set; }    
+        public ProductCategory Category { get; set; }
 
     }
 }

@@ -14,6 +14,7 @@ namespace LSSD.StoreFront.DB.repositories
         // Saved when passed from the constructor when a new repository object is created.
         // Retained for the lifetime of this object.
         private readonly DatabaseContext _dbConnection;
+        private readonly ProductCategoryRepository _categoryRepository;
 
         // Base SQL query to use. Methods below may add more things to this (like " WHERE" clauses), or
         // they may use their own queries.
@@ -23,6 +24,7 @@ namespace LSSD.StoreFront.DB.repositories
         public ProductRepository(DatabaseContext DatabaseConnection)
         {
             this._dbConnection = DatabaseConnection;
+            this._categoryRepository = new ProductCategoryRepository(this._dbConnection);
         }
 
         /// <summary>
@@ -52,7 +54,8 @@ namespace LSSD.StoreFront.DB.repositories
                 IsSpecialOrderItem = dataReader["IsSpecialOrderItem"].ToString().ToBool(),
                 AvailableFromDate = dataReader["AvailableFrom"].ToString().ToDateTime(),
                 AvailableToDate = dataReader["AvailableTo"].ToString().ToDateTime(),
-                RecyclingFee = dataReader["RecyclingFee"].ToString().ToDecimal()
+                RecyclingFee = dataReader["RecyclingFee"].ToString().ToDecimal(),
+                Category = _categoryRepository.Get(dataReader["CategoryId"].ToString().ToInt())
             };
         }
 
