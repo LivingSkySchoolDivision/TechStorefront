@@ -23,6 +23,9 @@ namespace LSSDStoreFront_FrontEnd.Pages
         {
             Inventory = new UserFriendlyInventory(dbContext);
             ShoppingCart = new UserFriendlyShoppingCart(dbContext, User.Identity.Name);
+
+
+
         }
 
         public ItemsModel(IConfiguration config)
@@ -31,4 +34,5 @@ namespace LSSDStoreFront_FrontEnd.Pages
         }
                 
     }
+
 }

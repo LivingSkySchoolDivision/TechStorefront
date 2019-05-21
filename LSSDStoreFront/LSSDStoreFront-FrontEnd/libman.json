@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "defaultProvider": "jsdelivr",
+  "libraries": [
+    {
+      "library": "bootstrap-input-spinner@1.11.8",
+      "destination": "wwwroot/lib/bootstrap-input-spinner/"
+    }
+  ]
+}

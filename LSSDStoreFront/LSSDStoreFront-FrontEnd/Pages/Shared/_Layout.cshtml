@@ -121,7 +121,11 @@
         </script>
     </environment>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
+    <script src="~/lib/bootstrap-input-spinner/src/bootstrap-input-spinner.js"></script>
+    <script>
+        $("input[type='number']").inputSpinner()
+    </script>
     @RenderSection("Scripts", required: false)
+
 </body>
 </html>

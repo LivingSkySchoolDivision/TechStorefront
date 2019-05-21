@@ -7,24 +7,61 @@
     ViewData["Title"] = "Items";
 }
 
+
+
 @{
     string productIdString = RouteData.Values["Id"].ToString();
     int productId = productIdString.ToInt();
-    
-        var product = Model.Inventory.Item(productId);
+
+    var product = Model.Inventory.Item(productId);
 
     @*
         Available in Product:
         Id, CategoryID, Name, Description, LongDescription, Alert, ThumbnailFileName, RecyclingFee, Price, IsAvailable, IsLimitedByStock, IsLimitedByDate, IsSpecialOrderItem, AvailableFromDate, AvailableToDate
+    @Model.Inventory.Item(productId).Name;
         *@
 
 
 
 }
 
-@Model.Inventory.Item(productId).Name;
+
 
 <h1>Items </h1>
 
-<p>Item = @product.Name</p>
-<p>ID = @productId</p>
+<div class="card text-center">
+    <div class="card-header">
+        @product.Name
+    </div>
+    <div class="card-body">
+        <p class="card-text">@product.Description</p>
+        <p class="card-text">@product.LongDescription</p>
+        <p class="">$@product.Price</p>
+    </div>
+        
+
+    <div class="card-footer text-muted">
+        <form class="form-inline">
+            <div class="form-group mx-sm-3 mb-2">
+                <input type="number" value="1" min="0" max="1000" step="1" />
+            </div>
+            <button type="submit" class="btn btn-primary mb-2">Add to cart</button>
+
+
+
+        </form>
+    </div>
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+    <p></p>
+

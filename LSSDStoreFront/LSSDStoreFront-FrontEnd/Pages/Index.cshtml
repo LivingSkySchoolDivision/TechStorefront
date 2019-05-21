@@ -21,7 +21,7 @@
 
                 @foreach (Lib.ProductCategory topLevelCategory in Model.Inventory.TopLevelCategories)
                 {
-                    <li class="nav-item"><a class="nav-link" href="/Categories/@topLevelCategory.Name">@topLevelCategory.Name</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Categories/@topLevelCategory.Id">@topLevelCategory.Name</a></li>
 
                     if (topLevelCategory.HasChildren)
                     {
@@ -29,7 +29,7 @@
                         @foreach (Lib.ProductCategory secondLevelCategory in topLevelCategory.ChildCategories)
                         {
                         <li class="nav-item">
-                            <a class="nav-link p-0" href="/Categories/@secondLevelCategory.Name">
+                            <a class="nav-link p-0" href="/Categories/@secondLevelCategory.Id">
                                 <i class="fa fa-fw fa-clock-o"></i> @secondLevelCategory.Name
                             </a>
                         </li>
@@ -72,13 +72,8 @@
             {
                 @foreach (Lib.Product product in Model.Inventory.ItemsFromCategory(category))
                 {
-                    <tr>
-                        @*
-                            <td>@(string.IsNullOrEmpty(product.ThumbnailFileName) ? "<i>No image</i>" : "<img src=\"" + @product.ThumbnailFileName + "\" />"))</td>
-                        *@                            
+                    <tr>                       
                         <td><img src="@product.ThumbnailFileName"/></td>
-
-                        <td></td>
                         <td><a href="/Items/@product.Id">@product.Name</a></td>
                         <td>@product.Description</td>
                         <td>@product.Price</td>
