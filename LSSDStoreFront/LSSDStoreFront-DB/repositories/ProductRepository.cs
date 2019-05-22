@@ -228,7 +228,7 @@ namespace LSSD.StoreFront.DB.repositories
                     sqlCommand.Parameters.AddWithValue("DESC", product.Description ?? string.Empty);
                     sqlCommand.Parameters.AddWithValue("LDESC", product.LongDescription ?? string.Empty);
                     sqlCommand.Parameters.AddWithValue("ALERT", product.Alert ?? string.Empty);
-                    sqlCommand.Parameters.AddWithValue("PRICE", product.Price);
+                    sqlCommand.Parameters.AddWithValue("PRICE", product.TotalPrice);
                     sqlCommand.Parameters.AddWithValue("ISAVAIL", product.IsAvailable);
                     sqlCommand.Parameters.AddWithValue("ISLIMITDBYSTOCK", product.IsLimitedByStock);
                     sqlCommand.Parameters.AddWithValue("ISLIMITEDBYDATE", product.IsLimitedByDate);
@@ -335,7 +335,7 @@ namespace LSSD.StoreFront.DB.repositories
                         sqlCommand.Parameters.AddWithValue("@NME", product.Name ?? string.Empty);
                         sqlCommand.Parameters.AddWithValue("@DSC", product.Description ?? string.Empty);
                         sqlCommand.Parameters.AddWithValue("@LDSC", product.Description ?? string.Empty);
-                        sqlCommand.Parameters.AddWithValue("@PRCE", product.Price);
+                        sqlCommand.Parameters.AddWithValue("@PRCE", product.TotalPrice);
                         sqlCommand.Parameters.AddWithValue("@LAVAIL", product.IsAvailable);
                         sqlCommand.Parameters.AddWithValue("@LSTOCK", product.IsLimitedByStock);
                         sqlCommand.Parameters.AddWithValue("@LDATE", product.IsLimitedByDate);

@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 
-namespace LSSDStoreFront_FrontEnd.Pages
+namespace LSSD.StoreFront.FrontEnd.Pages
 {
     public class OrdersModel : PageModel
     {
-        public OrdersModel(IConfiguration config)
+        public OrdersModel()
         {
         }
 

@@ -1,0 +1,74 @@
+﻿@page "{Id=0}"
+@using System.Security.Claims;
+@using LSSD.StoreFront.DB;
+@using LSSD.StoreFront.Lib;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration config
+@namespace LSSD.StoreFront.FrontEnd.Pages
+@model LSSD.StoreFront.FrontEnd.Pages.CategoryModel
+@{
+    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString(FrontendSettings.ConnectionStringName));
+    UserFriendlyInventory Inventory = new UserFriendlyInventory(dbContext);
+
+    string categoryIdString = RouteData.Values["Id"].ToString();
+    int categoryID = categoryIdString.ToInt();
+    List<Product> category = Inventory.ItemsFromCategory(categoryID);
+    ViewData["Title"] = Inventory.Category(categoryID).Name;
+}
+
+@section SideBar{
+    <!--Start sidebar-->
+    <div class="row">
+        <div class="col-2 collapse d-md-flex bg-light pt-2 min-vh-100" id="sidebar">
+            @*
+                Pt-2: spacing
+                col-2: read more here https://getbootstrap.com/docs/4.1/layout/grid/
+                d-md-flex: flex - https://getbootstrap.com/docs/4.1/utilities/flex/
+            *@
+
+            <ul class="nav flex-column flex-nowrap sticky-top">
+
+                @foreach (Lib.ProductCategory topLevelCategory in Inventory.TopLevelCategories)
+                {
+                    <li class="nav-item"><a class="nav-link" href="/Category/@topLevelCategory.Id">@topLevelCategory.Name</a></li>
+
+                    if (topLevelCategory.HasChildren)
+                    {
+                        <ul class="flex-column nav pl-4">
+                            @foreach (Lib.ProductCategory secondLevelCategory in topLevelCategory.ChildCategories)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link p-0" href="/Category/@secondLevelCategory.Id">
+                                        <i class="fa fa-fw fa-clock-o"></i> @secondLevelCategory.Name
+                                    </a>
+                                </li>
+
+                            }
+                        </ul>
+                    }
+                }
+            </ul>
+
+        </div>
+        <!--End Sidebar-->
+}
+<h1>@Inventory.Category(categoryID).Name</h1>
+<br /><br />
+
+@if (Inventory.Items.Count > 0)
+{
+    <div class="card-deck">
+
+        @foreach (Lib.Product product in Inventory.ItemsFromCategory(categoryID))
+        {
+            <div class="card bg-light" style="width: 18rem; flex: 20%; margin-bottom:20px;">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="/Item/@product.Id">@product.Name</a></h5>
+                    <p class="card-text">@product.Description</p>
+                    <p><b>$@product.TotalPrice.ToString("#,##0.00")</b></p>
+                    <a href="/Item/@product.Id" class="btn btn-sm btn-info" style="margin-bottom:4px;">Details</a>
+                </div>
+            </div>
+        }
+    </div>
+}

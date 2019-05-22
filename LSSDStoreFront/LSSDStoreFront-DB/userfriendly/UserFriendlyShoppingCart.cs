@@ -27,7 +27,7 @@ namespace LSSD.StoreFront.DB
                 {
                     if (item.Product != null)
                     {
-                        returnMe += (item.Product.Price * item.Quantity);
+                        returnMe += (item.Product.TotalPrice * item.Quantity);
                     }                    
                 }
                 return returnMe;

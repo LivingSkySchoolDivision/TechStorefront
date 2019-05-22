@@ -24,7 +24,7 @@ namespace LSSD.StoreFront.Lib
         public DateTime AvailableFromDate { get; set; }
         public DateTime AvailableToDate { get; set; }    
         public ProductCategory Category { get; set; }
-        public decimal Price {
+        public decimal TotalPrice {
             get
             {
                 return this.BasePrice + GSTAmount + PSTAmount + RecyclingFee;

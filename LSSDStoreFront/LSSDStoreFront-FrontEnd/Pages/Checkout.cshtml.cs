@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 
-namespace LSSDStoreFront_FrontEnd.Pages
+namespace LSSD.StoreFront.FrontEnd.Pages
 {
     public class CheckoutModel : PageModel
     {
@@ -16,7 +16,7 @@ namespace LSSDStoreFront_FrontEnd.Pages
 
         public CheckoutModel(IConfiguration config)
         {
-            dbContext = new DatabaseContext(config.GetConnectionString("InternalDatabase"));
+            dbContext = new DatabaseContext(config.GetConnectionString(FrontendSettings.ConnectionStringName));
         }
 
         public void OnGet()

@@ -4,12 +4,13 @@
 @using LSSD.StoreFront.DB;
 @using Microsoft.Extensions.Configuration;
 @inject IConfiguration config
-@model LSSDStoreFront_FrontEnd.Pages.OrdersModel
+@namespace LSSD.StoreFront.FrontEnd.Pages
+@model LSSD.StoreFront.FrontEnd.Pages.OrdersModel
 @{
-    ViewData["Title"] = "Orders";
+    ViewData["Title"] = "Order History";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 
-    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString("InternalDatabase"));
+    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString(FrontendSettings.ConnectionStringName));
     UserFriendlyOrders Orders = new UserFriendlyOrders(dbContext, User.Identity.Name);
     string UserDisplayName = ((System.Security.Claims.ClaimsIdentity)User.Identity).Claims.Where(c => c.Type == "name").FirstOrDefault().Value;
 }
@@ -35,7 +36,7 @@
             <td class="text-right">$@order.OrderGrandTotal.ToString("#,##0.00")</td>
             <td class="text-center">@order.OrderTotalItems</td>
             <td class="text-center">@order.BudgetAccountNumber</td>
-            <td class="text-center">@order.LastKnownStatus</td>            
+            <td class="text-center">@order.LastKnownStatus</td>
             <td class="text-right"><a href="/Order/@order.OrderThumbprint">View order details</a></td>
         </tr>
     }

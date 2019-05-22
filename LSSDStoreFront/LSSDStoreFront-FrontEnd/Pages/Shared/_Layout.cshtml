@@ -1,11 +1,12 @@
 ﻿@using LSSD.StoreFront.DB;
 @using Microsoft.Extensions.Configuration;
+@namespace LSSD.StoreFront.FrontEnd.Pages
 @inject IConfiguration config
 @{
     bool UserAccessGranted = false;
     if (User.Identity.IsAuthenticated)
     {
-        if (User.HasClaim("groups", "60783dd9-4154-478f-a23c-b9960418f109"))
+        if (User.HasClaim("groups", FrontendSettings.AccessSecurityGroupOID))
         {
             UserAccessGranted = true;
         }
@@ -17,7 +18,7 @@
     if (UserAccessGranted)
     {
         UserDisplayName = ((System.Security.Claims.ClaimsIdentity)User.Identity).Claims.Where(c => c.Type == "name").FirstOrDefault().Value;
-        DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString("InternalDatabase"));
+        DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString(FrontendSettings.ConnectionStringName));
         UserFriendlyShoppingCart ShoppingCart = new UserFriendlyShoppingCart(dbContext, User.Identity.Name);
         int shoppingCartItems = ShoppingCart.TotalItems;
         shoppingCartItemCountDisplay = shoppingCartItems > 0 ? "(" + shoppingCartItems + ")" : string.Empty;
@@ -67,25 +68,28 @@
                         @if (UserAccessGranted)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/ShoppingCart">Shopping Cart @shoppingCartItemCountDisplay</a>
+                                <a class="nav-link text-dark btn btn-sm btn-outline-light" asp-area="" asp-page="/Index">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Orders">Orders</a>
+                                <a class="nav-link text-dark btn btn-sm btn-outline-light" asp-area="" asp-page="/ShoppingCart">Shopping Cart @shoppingCartItemCountDisplay</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark btn btn-sm btn-outline-light" asp-area="" asp-page="/Orders">Orders</a>
                             </li>
                             <li class="nav-item">
                                 <b class="nav-link text-dark">@UserDisplayName</b>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-sm btn-outline-light" asp-area="" asp-controller="Account" asp-action="SignOut">Sign out</a>
+                            </li>
                         }
                     </ul>
-                    <!--Put search here-->
-                    <!--My Account here-->
                 </div>
 
             </div>
         </nav>
     </header>
     <div class="container-fluid">
-        <partial name="_CookieConsentPartial" />
         <main role="main" class="pb-3" style="min-width: 1000px; width: 75%; margin: 0 auto;">
             @RenderSection("SideBar", required: false)
             <div class="col p-0">

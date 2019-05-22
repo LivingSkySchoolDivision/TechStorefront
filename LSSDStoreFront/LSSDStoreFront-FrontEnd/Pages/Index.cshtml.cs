@@ -21,7 +21,7 @@ namespace LSSD.StoreFront.FrontEnd.Pages
         public IndexModel(IConfiguration config)
         {
             // set up a database connection            
-            DatabaseContext dbConnection = new DatabaseContext(config.GetConnectionString("InternalDatabase"));
+            DatabaseContext dbConnection = new DatabaseContext(config.GetConnectionString(FrontendSettings.ConnectionStringName));
             Inventory = new UserFriendlyInventory(dbConnection);
 
         }

@@ -1,8 +1,9 @@
 ﻿@page
 @using LSSD.StoreFront.Lib;
-@model LSSDStoreFront_FrontEnd.Pages.ShoppingCartModel
+@namespace LSSD.StoreFront.FrontEnd.Pages
+@model LSSD.StoreFront.FrontEnd.Pages.ShoppingCartModel
 @{
-    ViewData["Title"] = "ShoppingCart";
+    ViewData["Title"] = "Shopping Cart";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 <div style="">
@@ -15,7 +16,7 @@
             <button class="btn btn-sm btn-outline-danger small">Clear Cart</button>
         </form>
     </div>
-    <br/>
+    <br />
     <table class="table">
         <tr>
             <th class="text-left">Item</th>
@@ -39,7 +40,7 @@
                         <button class="btn btn-sm btn-link small">Remove</button>
                     </form>
                 </td>
-                <td class="text-right">$@item.Product.Price</td>
+                <td class="text-right">$@item.Product.TotalPrice.ToString("#,##0.00")</td>
                 <td class="text-right">&times;@item.Quantity</td>
                 <td class="text-right">$@item.TotalPrice.ToString("#,##0.00")</td>
             </tr>

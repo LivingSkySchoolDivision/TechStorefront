@@ -16,7 +16,7 @@ namespace LSSD.StoreFront.Lib
             {
                 if (Product != null)
                 {
-                    return Product.Price * Quantity;
+                    return Product.TotalPrice * Quantity;
                 } else
                 {
                     return 0;

@@ -4,12 +4,13 @@
 @using LSSD.StoreFront.DB;
 @using Microsoft.Extensions.Configuration;
 @inject IConfiguration config
-@model LSSDStoreFront_FrontEnd.Pages.CheckoutModel
+@namespace LSSD.StoreFront.FrontEnd.Pages
+@model LSSD.StoreFront.FrontEnd.Pages.CheckoutModel
 @{
     ViewData["Title"] = "Checkout";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 
-    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString("InternalDatabase"));
+    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString(FrontendSettings.ConnectionStringName));
     UserFriendlyShoppingCart ShoppingCart = new UserFriendlyShoppingCart(dbContext, User.Identity.Name);
     string UserDisplayName = ((System.Security.Claims.ClaimsIdentity)User.Identity).Claims.Where(c => c.Type == "name").FirstOrDefault().Value;
 
@@ -29,7 +30,7 @@
     {
         <tr>
             <td class="text-left">@item.Product.Name</td>
-            <td class="text-right">$@item.Product.Price</td>
+            <td class="text-right">$@item.Product.TotalPrice</td>
             <td class="text-center">&times;@item.Quantity</td>
             <td class="text-right">$@item.TotalPrice.ToString("#,##0.00")</td>
         </tr>
@@ -46,7 +47,7 @@
     </tr>
 </table>
 <br />
-<form  class="needs-validation" method="post" asp-page-handler="PlaceOrder" style="display: inline;">
+<form class="needs-validation" method="post" asp-page-handler="PlaceOrder" style="display: inline;">
     <h2>Budget Account Number</h2>
     <p>
         <input name="txtAccountNum" class="form-control" type="text" placeholder="Your budget account number here" required>

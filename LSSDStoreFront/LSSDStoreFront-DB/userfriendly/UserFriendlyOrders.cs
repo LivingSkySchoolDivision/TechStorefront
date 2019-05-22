@@ -67,7 +67,7 @@ namespace LSSD.StoreFront.DB
                     {
                         OrderThumbprint = "WILL-GET-REPLACED",
                         Name = scitem.Product.Name,
-                        ItemPrice = scitem.Product.Price,
+                        ItemPrice = scitem.Product.TotalPrice,
                         TotalPrice = scitem.TotalPrice,
                         ProductId = scitem.ProductId,
                         Quantity = scitem.Quantity

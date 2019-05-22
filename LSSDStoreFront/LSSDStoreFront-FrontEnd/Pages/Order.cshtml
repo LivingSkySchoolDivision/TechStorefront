@@ -4,15 +4,16 @@
 @using LSSD.StoreFront.DB;
 @using Microsoft.Extensions.Configuration;
 @inject IConfiguration config
-@model LSSDStoreFront_FrontEnd.Pages.OrderModel
+@namespace LSSD.StoreFront.FrontEnd.Pages
+@model LSSD.StoreFront.FrontEnd.Pages.OrderModel
 @{
-    ViewData["Title"] = "Orders";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 
-    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString("InternalDatabase"));
+    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString(FrontendSettings.ConnectionStringName));
     UserFriendlyOrders Orders = new UserFriendlyOrders(dbContext, User.Identity.Name);
 
     Order order = Orders.Get(RouteData.Values["Id"].ToString());
+    ViewData["Title"] = "Order " + order.OrderThumbprint;
 }
 
 @if (order != null)

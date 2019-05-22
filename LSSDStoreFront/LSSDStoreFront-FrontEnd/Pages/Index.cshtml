@@ -1,30 +1,21 @@
 ﻿@page  "{category?}/{item?}"
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
-
+    ViewData["Title"] = "Home";
 }
-
     <div class="">
-
-
-
         @foreach (Lib.ProductCategory topLevelCategory in Model.Inventory.TopLevelCategories)
         {
-
-            <a class="" href="/Categories/@topLevelCategory.Id">@topLevelCategory.Name</a>
+            <a class="" href="/Category/@topLevelCategory.Id">@topLevelCategory.Name</a>
             <br />
-
             if (topLevelCategory.HasChildren)
             {
                 @foreach (Lib.ProductCategory secondLevelCategory in topLevelCategory.ChildCategories)
                 {
-                    <a class="nav-link p-0" href="/Categories/@secondLevelCategory.Id">
+                    <a class="nav-link p-0" href="/Category/@secondLevelCategory.Id">
                         <i class="fa fa-fw fa-clock-o"></i> @secondLevelCategory.Name
                     </a>
                     <br />
-
-
                 }
             }
         }

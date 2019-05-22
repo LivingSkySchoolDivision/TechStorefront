@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Extensions.Logging;
 
-namespace LSSDStoreFront.FrontEnd
+namespace LSSD.StoreFront.FrontEnd
 {
     public class Program
     {

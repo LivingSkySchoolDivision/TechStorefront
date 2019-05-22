@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
 
-namespace LSSDStoreFront.FrontEnd
+namespace LSSD.StoreFront.FrontEnd
 {
     public class Startup
     {
@@ -41,7 +41,7 @@ namespace LSSDStoreFront.FrontEnd
             {
                 var policy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
-                    .RequireClaim("groups", "60783dd9-4154-478f-a23c-b9960418f109")
+                    .RequireClaim("groups", FrontendSettings.AccessSecurityGroupOID)
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             })
