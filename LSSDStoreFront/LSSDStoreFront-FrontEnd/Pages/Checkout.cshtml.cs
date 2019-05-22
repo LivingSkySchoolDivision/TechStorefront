@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LSSD.StoreFront.DB;
+using LSSD.StoreFront.Lib;
 using LSSD.StoreFront.Lib.UserAccounts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -40,7 +41,7 @@ namespace LSSD.StoreFront.FrontEnd.Pages
             UserThumbprint userThumb = new UserThumbprint(User.Identity.Name);
 
             // Create the order
-            orders.CreateOrder(shoppingCart.Items, budgetNumber, submittedBy, userThumb, customerNotes);
+            Order newOrder = orders.CreateOrder(shoppingCart.Items, budgetNumber, submittedBy, userThumb, customerNotes);
 
             // Clear the user's cart 
             shoppingCart.ClearCart();
@@ -49,7 +50,7 @@ namespace LSSD.StoreFront.FrontEnd.Pages
             shoppingCart.Save();
 
             // Redirect to order thanks page??
-            return RedirectToPage("/Orders");
+            return Redirect("/Thanks/" + newOrder.OrderThumbprint);
         }
     }
 }

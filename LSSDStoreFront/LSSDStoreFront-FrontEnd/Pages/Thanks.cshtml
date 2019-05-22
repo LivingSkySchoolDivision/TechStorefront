@@ -1,0 +1,19 @@
+﻿@page "{ID}"
+@model LSSDStoreFront_FrontEnd.Pages.ThanksModel
+@{
+    ViewData["Title"] = "Thanks";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    string OrderNumber = RouteData.Values["ID"].ToString() ?? string.Empty;
+}
+
+<h1>Thanks!</h1>
+<p>We have received your order, and you will be notified when it is ready.</p>
+<p>Large orders may be drop-shipped to your school, or may be delivered by IT staff. We may contact you to arrange shipping details.</p>
+<p>Small orders may be delivered via inter-office mail.</p>
+<p>Replacement parts will be installed in damaged devices wherever possible.</p>
+@if (!string.IsNullOrEmpty(OrderNumber))
+{
+    <p><b>Order ID:</b> @OrderNumber</p>
+}
+<p><a href="/Orders">Click here to view your order history.</a></p>
+
