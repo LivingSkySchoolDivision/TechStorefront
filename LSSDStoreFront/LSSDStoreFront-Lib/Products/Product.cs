@@ -54,7 +54,7 @@ namespace LSSD.StoreFront.Lib
                     return 0;
                 } else
                 {
-                    return (this.BasePrice * Tax.GST);
+                    return (this.BasePrice * Tax.SaskPST);
                 }
             }
         }
