@@ -65,7 +65,8 @@ namespace LSSD.StoreFront.FrontEnd
             else
             {
                 app.UseExceptionHandler("/Error");
-            }
+                app.UseHttpsRedirection();
+            }            
 
             app.UseStaticFiles();
 

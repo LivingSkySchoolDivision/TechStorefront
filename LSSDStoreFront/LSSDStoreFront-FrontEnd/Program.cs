@@ -34,6 +34,7 @@ namespace LSSD.StoreFront.FrontEnd
                         builder.AddAzureKeyVault(keyVaultEndpoint, keyVaultClient, new DefaultKeyVaultSecretManager());
                     }
                 })
+                .UseSetting("https_port", "443")
                 .UseStartup<Startup>();
 
         private static string GetKeyVaultEndpoint() => Environment.GetEnvironmentVariable("KEYVAULT_ENDPOINT");
