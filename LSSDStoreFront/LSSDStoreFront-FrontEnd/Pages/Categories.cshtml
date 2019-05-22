@@ -14,9 +14,9 @@
     <div class="row">
         <div class="col-2 collapse d-md-flex bg-light pt-2 min-vh-100" id="sidebar">
             @*
-                Pt-2: spacing
-                col-2: read more here https://getbootstrap.com/docs/4.1/layout/grid/
-                d-md-flex: flex - https://getbootstrap.com/docs/4.1/utilities/flex/
+            Pt-2: spacing
+            col-2: read more here https://getbootstrap.com/docs/4.1/layout/grid/
+            d-md-flex: flex - https://getbootstrap.com/docs/4.1/utilities/flex/
 
             *@
 
@@ -45,38 +45,36 @@
 
         </div>
         <!--End Sidebar-->
-}
+    }
 
 
+    @{
+        string categoryIdString = RouteData.Values["Id"].ToString();
+        int categoryID = categoryIdString.ToInt();
 
+        var category = Model.Inventory.ItemsFromCategory(categoryID);
 
-<h1>Categories - Category Name</h1>
+    }
 
+<h1>@Model.Inventory.Category(categoryID).Name</h1>
+<br /><br />
 
-@{
-    string categoryIdString = RouteData.Values["Id"].ToString();
-    int categoryID = categoryIdString.ToInt();
+    @if (Model.Inventory.Items.Count > 0)
+    {
+        <div class="card-deck">
 
-    var category = Model.Inventory.ItemsFromCategory(categoryID);
-
-}
-
-@if (Model.Inventory.Items.Count > 0)
-{
-    <div class="card-deck">
-
-        @foreach (Lib.Product product in Model.Inventory.ItemsFromCategory(categoryID))
-        {
-            <div class="card bg-light" style="width: 18rem; flex: 20%; margin-bottom:20px;">
-                <div class="card-body">
-                    <h5 class="card-title"><a href="/Items/@product.Id">@product.Name</a></h5>
-                    <p class="card-text">@product.Description</p>
-                    <p>$@product.Price</p>
-                    <a href="/Items/@product.Id" class="btn btn-info" style="margin-bottom:4px;">Details</a>
+            @foreach (Lib.Product product in Model.Inventory.ItemsFromCategory(categoryID))
+            {
+                <div class="card bg-light" style="width: 18rem; flex: 20%; margin-bottom:20px;">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="/Items/@product.Id">@product.Name</a></h5>
+                        <p class="card-text">@product.Description</p>
+                        <p>$@product.Price</p>
+                        <a href="/Items/@product.Id" class="btn btn-info" style="margin-bottom:4px;">Details</a>
+                    </div>
                 </div>
-            </div>
 
 
-        }
-    </div>
-}
+            }
+        </div>
+    }
