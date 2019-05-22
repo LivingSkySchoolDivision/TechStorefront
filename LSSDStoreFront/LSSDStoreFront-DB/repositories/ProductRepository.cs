@@ -47,7 +47,7 @@ namespace LSSD.StoreFront.DB.repositories
                 LongDescription = dataReader["ProductLongDescription"].ToString(),
                 Alert = dataReader["ProductAlerts"].ToString(),
                 ThumbnailFileName = dataReader["ThumbnailFileName"].ToString(),
-                Price = dataReader["Price"].ToString().ToDecimal(),
+                BasePrice = dataReader["Price"].ToString().ToDecimal(),
                 IsAvailable = dataReader["IsProductAvailable"].ToString().ToBool(),
                 IsLimitedByStock = dataReader["IsLimitedByStock"].ToString().ToBool(),
                 IsLimitedByDate = dataReader["IsLimitedByDate"].ToString().ToBool(),
@@ -55,7 +55,9 @@ namespace LSSD.StoreFront.DB.repositories
                 AvailableFromDate = dataReader["AvailableFrom"].ToString().ToDateTime(),
                 AvailableToDate = dataReader["AvailableTo"].ToString().ToDateTime(),
                 RecyclingFee = dataReader["RecyclingFee"].ToString().ToDecimal(),
-                Category = _categoryRepository.Get(dataReader["CategoryId"].ToString().ToInt())
+                Category = _categoryRepository.Get(dataReader["CategoryId"].ToString().ToInt()),
+                IsGSTExempt = dataReader["IsGSTExempt"].ToString().ToBool(),
+                IsPSTExempt = dataReader["IsPSTExempt"].ToString().ToBool(),
             };
         }
 

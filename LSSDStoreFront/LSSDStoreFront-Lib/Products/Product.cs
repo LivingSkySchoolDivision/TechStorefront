@@ -14,14 +14,50 @@ namespace LSSD.StoreFront.Lib
         public string Alert { get; set; }
         public string ThumbnailFileName { get; set; }
         public decimal RecyclingFee { get; set; }
-        public decimal Price { get; set; }
+        public decimal BasePrice { get; set; }
         public bool IsAvailable { get; set; }
         public bool IsLimitedByStock { get; set; }
         public bool IsLimitedByDate { get; set; }
         public bool IsSpecialOrderItem { get; set; }
+        public bool IsGSTExempt { get; set; }
+        public bool IsPSTExempt { get; set; }
         public DateTime AvailableFromDate { get; set; }
         public DateTime AvailableToDate { get; set; }    
         public ProductCategory Category { get; set; }
+        public decimal Price {
+            get
+            {
+                return this.BasePrice + GSTAmount + PSTAmount + RecyclingFee;
+            }
+        }
+
+        public decimal GSTAmount {
+            get
+            {
+                if (this.IsGSTExempt)
+                {
+                    return 0;
+                } else
+                {
+                    return ((this.BasePrice + this.RecyclingFee) * Tax.GST);
+                }
+
+            }
+        }
+
+        public decimal PSTAmount
+        {
+            get
+            {
+                if (this.IsPSTExempt)
+                {
+                    return 0;
+                } else
+                {
+                    return (this.BasePrice * Tax.GST);
+                }
+            }
+        }
 
     }
 }
