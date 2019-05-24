@@ -10,6 +10,11 @@ namespace LSSD.StoreFront.Lib.Utilities
     {
         public static string Hash(string input)
         {
+            if (input == null)
+            {
+                return Hash(string.Empty);
+            }
+
             using (SHA256 sha256 = SHA256.Create())
             {
                 byte[] hashedValue = sha256.ComputeHash(Encoding.Default.GetBytes(input));

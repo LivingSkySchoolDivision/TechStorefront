@@ -9,7 +9,7 @@ namespace LSSD.StoreFront.DB
     {
         // Date bounds of Microsoft SQL server
         private static readonly DateTime dbMinDate = new DateTime(1753, 01, 01);
-        private static readonly DateTime dbMaxDate = new DateTime(1999, 12, 31);
+        private static readonly DateTime dbMaxDate = new DateTime(9999, 12, 31);
 
         /// <summary>
         /// Sanitize a DateTime object to be put in an MS SQL database. Microsoft SQL server's minumum and maximum dates are 
@@ -100,18 +100,18 @@ namespace LSSD.StoreFront.DB
         /// <summary>
         /// Parses a string to a bool. Always returns a value, and returns false on a failure.
         /// </summary>
-        /// <param name="thisDatabaseValue"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
-        public static bool ToBool(this string thisDatabaseValue)
+        public static bool ToBool(this string value)
         {
-            if (String.IsNullOrEmpty(thisDatabaseValue))
+            if (String.IsNullOrEmpty(value))
             {
                 return false;
             }
             else
             {
-                bool parsedBool = false;
-                Boolean.TryParse(thisDatabaseValue, out parsedBool);
+                if (value.Equals("1")) { return true; }
+                Boolean.TryParse(value, out bool parsedBool);
                 return parsedBool;
             }
         }
