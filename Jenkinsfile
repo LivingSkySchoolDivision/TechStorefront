@@ -14,19 +14,21 @@ pipeline {
                     url: 'git@ssh.dev.azure.com:v3/LivingSkySchoolDivision/LSSDStoreFront/LSSDStoreFront'
             }
         }
-        stage('Docker build') {
-            parallel(
-                steps {
-                    dir("LSSDStoreFront") {
-                        sh "docker build --no-cache -t ${PRIVATE_REPO}:latest -f Dockerfile-Frontend -t ${PRIVATE_REPO}:${TAG} ."
-                    }                    
-                },
-                steps {
-                    dir("LSSDStoreFront") {
-                        sh "docker build --no-cache -t ${PRIVATE_REPO_MAN}:latest -f Dockerfile-Manager -t ${PRIVATE_REPO_MAN}:${TAG} ."
-                    }                    
-                }
-            )
+        stage('Docker build') {            
+            steps {
+                parallel(
+                    FrontEnd: {
+                        dir("LSSDStoreFront") {
+                            sh "docker build --no-cache -t ${PRIVATE_REPO}:latest -f Dockerfile-Frontend -t ${PRIVATE_REPO}:${TAG} ."
+                        }   
+                    },
+                    Manager: {
+                        dir("LSSDStoreFront") {
+                            sh "docker build --no-cache -t ${PRIVATE_REPO_MAN}:latest -f Dockerfile-Manager -t ${PRIVATE_REPO_MAN}:${TAG} ."
+                        } 
+                    }
+                )                                 
+            }
         }
         stage('Docker push') {
             steps {
