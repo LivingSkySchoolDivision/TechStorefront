@@ -1,0 +1,22 @@
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-stretch-slim AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2-stretch AS build
+WORKDIR /src
+COPY ["LSSDStoreFront-Manager/LSSDStoreFront-Manager.csproj", "LSSDStoreFront-Manager/"]
+COPY ["LSSDStoreFront-Lib/LSSDStoreFront-Lib.csproj", "LSSDStoreFront-Lib/"]
+COPY ["LSSDStoreFront-DB/LSSDStoreFront-DB.csproj", "LSSDStoreFront-DB/"]
+RUN dotnet restore "LSSDStoreFront-Manager/LSSDStoreFront-Manager.csproj"
+COPY . .
+WORKDIR "/src/LSSDStoreFront-Manager"
+RUN dotnet build "LSSDStoreFront-Manager.csproj" -c Release -o /app
+
+FROM build AS publish
+RUN dotnet publish "LSSDStoreFront-Manager.csproj" -c Release -o /app
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app .
+ENTRYPOINT ["dotnet", "LSSDStoreFront-Manager.dll"]

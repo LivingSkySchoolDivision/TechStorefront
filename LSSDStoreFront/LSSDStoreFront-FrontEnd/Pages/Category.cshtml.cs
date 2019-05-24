@@ -39,6 +39,8 @@ namespace LSSD.StoreFront.FrontEnd.Pages
                     shoppingCart.Save();
                 }
             }
+
+            // ?ItemAdded=true
         }
     }
 }

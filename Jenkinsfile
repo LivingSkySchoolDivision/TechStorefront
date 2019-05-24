@@ -1,8 +1,9 @@
 pipeline {
     agent any
     environment {
-        REPO = "storefront"
+        REPO = "techstorefront/storefront"
         PRIVATE_REPO = "${PRIVATE_DOCKER_REGISTRY}/${REPO}"
+        PRIVATE_REPO_MAN = "${PRIVATE_DOCKER_REGISTRY}/${REPO}-manager"
         TAG = "j-${env.BUILD_NUMBER}"
     }
     stages {
@@ -14,31 +15,29 @@ pipeline {
             }
         }
         stage('Docker build') {
-            steps {
-                dir("LSSDStoreFront") {
-                    sh "docker build --no-cache -t ${PRIVATE_REPO}:latest -t ${PRIVATE_REPO}:${TAG} ."
+            parallel(
+                steps {
+                    dir("LSSDStoreFront") {
+                        sh "docker build --no-cache -t ${PRIVATE_REPO}:latest -f Dockerfile-Frontend -t ${PRIVATE_REPO}:${TAG} ."
+                    }                    
+                },
+                steps {
+                    dir("LSSDStoreFront") {
+                        sh "docker build --no-cache -t ${PRIVATE_REPO_MAN}:latest -f Dockerfile-Manager -t ${PRIVATE_REPO_MAN}:${TAG} ."
+                    }                    
                 }
-                
-            }
+            )
         }
         stage('Docker push') {
             steps {
                 sh "docker push ${PRIVATE_REPO}:${TAG}"
-                sh "docker push ${PRIVATE_REPO}:latest"           
+                sh "docker push ${PRIVATE_REPO}:latest" 
+                sh "docker push ${PRIVATE_REPO_MAN}:${TAG}"
+                sh "docker push ${PRIVATE_REPO_MAN}:latest"           
             }
         }
     }
-    post {
-        failure {
-            mail to:'jenkinsalerts@lskysd.ca',
-                subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
-                body: "Something is wrong with ${env.BUILD_URL}"
-        }
-        success {
-            mail to:'jenkinsalerts@lskysd.ca',
-                subject: "Build pipeline completed successfully: ${currentBuild.fullDisplayName}",
-                body: "${env.BUILD_URL}"
-        }
+    post {        
         always {
             deleteDir()
         }

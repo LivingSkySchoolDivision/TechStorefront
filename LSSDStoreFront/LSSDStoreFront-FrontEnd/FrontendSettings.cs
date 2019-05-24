@@ -8,6 +8,8 @@ namespace LSSD.StoreFront.FrontEnd
     public class FrontendSettings
     {
         public const string ConnectionStringName = "InternalDatabase";
+
+        // LSSD Storefront Access
         public const string AccessSecurityGroupOID = "60783dd9-4154-478f-a23c-b9960418f109";
     }
 }

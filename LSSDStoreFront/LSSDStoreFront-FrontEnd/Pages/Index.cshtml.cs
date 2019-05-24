@@ -15,8 +15,9 @@ namespace LSSD.StoreFront.FrontEnd.Pages
         public UserFriendlyInventory Inventory;
         
         public void OnGet()
-        {            
+        {     
         }
+
 
         public IndexModel(IConfiguration config)
         {

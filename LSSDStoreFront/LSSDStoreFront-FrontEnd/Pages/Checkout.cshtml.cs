@@ -24,7 +24,7 @@ namespace LSSD.StoreFront.FrontEnd.Pages
         {
 
         }
-
+                
         public IActionResult OnPostBackToCart()
         {
             return RedirectToPage("/ShoppingCart");
