@@ -30,7 +30,7 @@
     {
         <tr>
             <td class="text-left">@item.Product.Name</td>
-            <td class="text-right">$@item.Product.TotalPrice</td>
+            <td class="text-right">$@item.Product.TotalPrice.ToString("#,##0.00")</td>
             <td class="text-center">&times;@item.Quantity</td>
             <td class="text-right">$@item.TotalPrice.ToString("#,##0.00")</td>
         </tr>
