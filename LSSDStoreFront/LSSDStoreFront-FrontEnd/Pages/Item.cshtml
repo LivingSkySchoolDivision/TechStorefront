@@ -33,61 +33,78 @@
         <h5>Description</h5>
 
         <div class="row">
-            <div class="col-8">
-                <p>@product.LongDescription</p>
-            </div>
-            <div class="col-4">
-                <table class="table text-left table-sm">
-                    <thead class="thead-dark">
+
+            @if (product.IsAvailable)
+            {
+                <div class="col-8">
+                    <p>@product.LongDescription</p>
+                </div>
+                <div class="col-4">
+                    <table class="table text-left table-sm">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>
+                                    Price
+                                </th>
+                            </tr>
+                        </thead>
                         <tr>
-                            <th>
-                                Price
-                            </th>
+                            <td class="table-active">Base Price</td>
+                            <td class="text-right">$@product.BasePrice.ToString("#,##0.00")</td>
                         </tr>
-                    </thead>
-                    <tr>
-                        <td class="table-active">Base Price</td>
-                        <td class="text-right">$@product.BasePrice.ToString("#,##0.00")</td>
-                    </tr>
-                    @if (product.RecyclingFee > 0)
-                    {
+                        @if (product.RecyclingFee > 0)
+                        {
+                            <tr>
+                                <td class="table-active"><a href="https://www.recyclemyelectronics.ca/sk/residential/environmental-handling-fee-ehf/" target="_blank"><abbr title="Environmental Handling Fee">EHF</abbr></a></td>
+                                <td class="text-right">$@product.RecyclingFee.ToString("#,##0.00")</td>
+                            </tr>
+                        }
+                        @if (!product.IsGSTExempt)
+                        {
+                            <tr>
+                                <td class="table-active">GST</td>
+                                <td class="text-right">$@product.GSTAmount.ToString("#,##0.00")</td>
+                            </tr>
+                        }
+                        @if (!product.IsPSTExempt)
+                        {
+                            <tr>
+                                <td class="table-active">PST</td>
+                                <td class="text-right">$@product.PSTAmount.ToString("#,##0.00")</td>
+                            </tr>
+                        }
                         <tr>
-                            <td class="table-active"><a href="https://www.recyclemyelectronics.ca/sk/residential/environmental-handling-fee-ehf/" target="_blank"><abbr title="Environmental Handling Fee">EHF</abbr></a></td>
-                            <td class="text-right">$@product.RecyclingFee.ToString("#,##0.00")</td>
+                            <td class="table-active">Total Price</td>
+                            <td class="table-primary text-right"><b>$@product.TotalPrice.ToString("#,##0.00")</b></td>
                         </tr>
-                    }
-                    @if (!product.IsGSTExempt)
-                    {
-                        <tr>
-                            <td class="table-active">GST</td>
-                            <td class="text-right">$@product.GSTAmount.ToString("#,##0.00")</td>
-                        </tr>
-                    }
-                    @if (!product.IsPSTExempt)
-                    {
-                        <tr>
-                            <td class="table-active">PST</td>
-                            <td class="text-right">$@product.PSTAmount.ToString("#,##0.00")</td>
-                        </tr>
-                    }
-                    <tr>
-                        <td class="table-active">Total Price</td>
-                        <td class="table-primary text-right"><b>$@product.TotalPrice.ToString("#,##0.00")</b></td>
-                    </tr>
-                </table>
-            </div>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="col-12">
+                    <p>@product.LongDescription</p>
+                </div>
+            }
         </div>
     </div>
 
     <div class="card-footer text-muted">
-
-        <form method="post" asp-page-handler="AddItemToCart" class="form-inline float-right">
-            <div class="form-group mx-sm-3 mb-2">
-                <input type="hidden" name="txtProductId" value="@product.Id" />
-                <input name="txtQuantity" class="form-control form-control-sm" type="number" value="1" min="1" max="9999" step="1" required />
+        @if (product.IsAvailable)
+        {
+            <form method="post" asp-page-handler="AddItemToCart" class="form-inline float-right">
+                <div class="form-group mx-sm-3 mb-2">
+                    <input type="hidden" name="txtProductId" value="@product.Id" />
+                    <input name="txtQuantity" class="form-control form-control-sm" type="number" value="1" min="1" max="9999" step="1" required />
+                </div>
+                <button type="submit" class="btn btn-success mb-2">Add to cart</button>
+            </form>
+        }
+        else {
+            <div class="alert alert-danger" role="alert">
+                This product is not available for purchase at this time.
             </div>
-            <button type="submit" class="btn btn-success mb-2">Add to cart</button>
-        </form>
+        }
 
     </div>
 
