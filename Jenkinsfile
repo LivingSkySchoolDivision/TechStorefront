@@ -7,27 +7,34 @@ pipeline {
         TAG = "j-${env.BUILD_NUMBER}"
     }
     stages {
-        stage('Git clone') {
+        stage('Test') {
+            agent {
+                docker { 
+                    image 'mcr.microsoft.com/dotnet/core/sdk:2.2-stretch'
+                    args '-v ${PWD}:/app'
+                }
+            }
             steps {
                 git branch: 'master',
                     credentialsId: 'JENKINS-AZUREDEVOPS',
                     url: 'git@ssh.dev.azure.com:v3/LivingSkySchoolDivision/LSSDStoreFront/LSSDStoreFront'
+               
+                dir("LSSDStoreFront") {
+                    sh 'dotnet build'
+                    sh 'dotnet test'
+                }
             }
         }
         stage('Docker build') {            
             steps {
-                parallel(
-                    FrontEnd: {
-                        dir("LSSDStoreFront") {
-                            sh "docker build --no-cache -t ${PRIVATE_REPO}:latest -f Dockerfile-Frontend -t ${PRIVATE_REPO}:${TAG} ."
-                        }   
-                    },
-                    Manager: {
-                        dir("LSSDStoreFront") {
-                            sh "docker build --no-cache -t ${PRIVATE_REPO_MAN}:latest -f Dockerfile-Manager -t ${PRIVATE_REPO_MAN}:${TAG} ."
-                        } 
-                    }
-                )                                 
+                git branch: 'master',
+                    credentialsId: 'JENKINS-AZUREDEVOPS',
+                    url: 'git@ssh.dev.azure.com:v3/LivingSkySchoolDivision/LSSDStoreFront/LSSDStoreFront'
+
+                dir("LSSDStoreFront") {
+                    sh "docker build -t ${PRIVATE_REPO}:latest -f Dockerfile-Frontend -t ${PRIVATE_REPO}:${TAG} ."
+                    sh "docker build -t ${PRIVATE_REPO_MAN}:latest -f Dockerfile-Manager -t ${PRIVATE_REPO_MAN}:${TAG} ."                        
+                }                           
             }
         }
         stage('Docker push') {
@@ -40,8 +47,18 @@ pipeline {
         }
     }
     post {        
-        always {
+        always {              
             deleteDir()
+            sh "docker image rm ${PRIVATE_REPO}:${TAG}"
+            sh "docker image rm ${PRIVATE_REPO}:latest" 
+            sh "docker image rm ${PRIVATE_REPO_MAN}:${TAG}"
+            sh "docker image rm ${PRIVATE_REPO_MAN}:latest"  
+            deleteDir()
+        }
+        failure {
+            mail to:'jenkinsalerts@lskysd.ca',
+                subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+                body: "Something is wrong with ${env.BUILD_URL}"
         }
     }
 }
