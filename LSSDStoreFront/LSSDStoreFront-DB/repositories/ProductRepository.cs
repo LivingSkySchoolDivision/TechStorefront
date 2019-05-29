@@ -228,7 +228,7 @@ namespace LSSD.StoreFront.DB.repositories
                     sqlCommand.Parameters.AddWithValue("DESC", product.Description ?? string.Empty);
                     sqlCommand.Parameters.AddWithValue("LDESC", product.LongDescription ?? string.Empty);
                     sqlCommand.Parameters.AddWithValue("ALERT", product.Alert ?? string.Empty);
-                    sqlCommand.Parameters.AddWithValue("PRICE", product.TotalPrice);
+                    sqlCommand.Parameters.AddWithValue("PRICE", product.BasePrice);
                     sqlCommand.Parameters.AddWithValue("ISAVAIL", product.IsAvailable);
                     sqlCommand.Parameters.AddWithValue("ISLIMITDBYSTOCK", product.IsLimitedByStock);
                     sqlCommand.Parameters.AddWithValue("ISLIMITEDBYDATE", product.IsLimitedByDate);
