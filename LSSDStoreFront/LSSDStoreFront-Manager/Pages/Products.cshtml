@@ -1,9 +1,45 @@
 ﻿@page
-@model LSSDStoreFront_Manager.Pages.ProductsModel
+@using LSSD.StoreFront.Lib;
+@using LSSD.StoreFront.DB;
+@using LSSD.StoreFront.DB.repositories;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration config
+@model LSSD.StoreFront.Manager.Pages.ProductsModel
 @{
     ViewData["Title"] = "Products";
     Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString(ManagerSettings.ConnectionStringName));
+    ProductRepository productRepository = new ProductRepository(dbContext);
 }
 
 <h1>Products</h1>
+<form method="post" asp-page-handler="AddItem" style="display: inline;">
+    <button class="btn btn-sm btn-outline-primary small">Add new product</button>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Category</th>
+            <th scope="col">Product</th>
+            <th scope="col">Base Price</th>
+            <th scope="col">EHF</th>
+            <th scope="col">Total Price</th>
+            <th scope="col">IsAvailable?</th>
+        </tr>
+    </thead>
 
+    @foreach (Product item in productRepository.GetAll().OrderBy(x => x.CategoryId).ThenBy(x => x.Name))
+    {
+        string recyclingFee = item.RecyclingFee > 0 ? "$" + @item.RecyclingFee.ToString("#,##0.00") : "";
+<tr>
+    <td>@item.Category.Name</td>
+    <td><a href="/product/@item.Id">@item.Name</a></td>
+    <td>@recyclingFee</td>
+    <td>$@item.BasePrice.ToString("#,##0.00")</td>
+    <td>$@item.TotalPrice.ToString("#,##0.00")</td>
+    <td>@item.IsAvailable</td>
+</tr>
+    }
+
+</table>

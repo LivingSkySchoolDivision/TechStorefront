@@ -1,0 +1,172 @@
+﻿@page "{Id:int?}"
+@using LSSD.StoreFront.Lib;
+@using LSSD.StoreFront.DB;
+@using LSSD.StoreFront.DB.repositories;
+@using Microsoft.Extensions.Configuration;
+@using System.Web;
+@inject IConfiguration config
+@namespace LSSD.StoreFront.Manager.Pages
+@model LSSD.StoreFront.Manager.Pages.ProductModel
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    int productId = (RouteData.Values["Id"].ToString() ?? string.Empty).ToInt();
+    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString(ManagerSettings.ConnectionStringName));
+
+    ProductRepository productRepository = new ProductRepository(dbContext);
+    ProductCategoryRepository categoryRepository = new ProductCategoryRepository(dbContext);
+
+    Product product = productRepository.Get(productId);
+}
+
+@if (product == null)
+{
+    <h1>Product not found</h1>
+    <p>Sorry!</p>
+}
+
+@if (product != null)
+{
+    ViewData["Title"] = product.Name;
+
+
+    <h2>@product.Name</h2>
+    <br />
+
+    <form method="post" asp-page-handler="UpdateItem" style="display: inline;">
+        <input type="hidden" value="@product.Id" name="txtProductId" />
+
+        <div class="form-group">
+            <label for="txtProductName">Product Name</label>
+            <input type="text" class="form-control" name="txtProductName" value="@product.Name">
+        </div>
+
+        <div class="form-group">
+            <label for="txtShortDescription">Short Description (HTML supported</label>
+            <textarea class="form-control" name="txtShortDescription" rows="3">@HttpUtility.HtmlDecode(product.Description)</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="txtLongDescription">Long Description (HTML supported)</label>
+            <textarea class="form-control" name="txtLongDescription" rows="7">@HttpUtility.HtmlDecode(product.LongDescription).Replace("<br>", "\n")</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="drpCategoryId">Product Category</label>
+            <select class="custom-select" name="drpCategoryId">
+                @foreach (ProductCategory category in categoryRepository.GetAll().OrderBy(x => x.Name))
+                {
+                    if (product.CategoryId == category.Id)
+                    {
+                        <option selected value="@category.Id">@category.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+
+                }
+            </select>
+        </div>
+
+
+        <div class="form-group">
+            <label for="exampleInputEmail1">Thumbnail</label>
+            <input type="text" class="form-control" name="txtThumbnail" value="@product.ThumbnailFileName">
+        </div>
+
+        <div class="form-group">
+            @{
+                string chkGstExempt = "";
+                if (product.IsGSTExempt)
+                {
+                    chkGstExempt = "checked";
+                }
+
+                string chkPstExempt = "";
+                if (product.IsPSTExempt)
+                {
+                    chkPstExempt = "checked";
+                }
+            }
+            <table style="width: 400px;">
+                <tr>
+                    <td><label for="exampleInputEmail1">Base Price</label></td>
+                    <td>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="baseprice_dollarsign">$</span>
+                            </div>
+                            <input type="text" class="form-control" name="txtBasePrice" aria-describedby="baseprice_dollarsign" value="@product.BasePrice.ToString("###0.00")">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="exampleInputEmail1">Recycling Fee / Environment Handling Fee</label></td>
+                    <td>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="baseprice_dollarsign">$</span>
+                            </div>
+                            <input type="text" class="form-control" name="txtRecyclingFee" aria-describedby="baseprice_dollarsign" value="@product.RecyclingFee.ToString("###0.00")">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="chkGSTExempt" name="chkGSTExempt" @chkGstExempt>
+                            <label class="custom-control-label" for="chkGSTExempt">Is GST Exempt</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="chkPSTExempt" name="chkPSTExempt" @chkPstExempt>
+                            <label class="custom-control-label" for="chkPSTExempt">Is PST Exempt</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="exampleInputEmail1">Total Price</label></td>
+                    <td>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="baseprice_dollarsign">$</span>
+                            </div>
+                            <input type="text" disabled class="form-control" name="txtTotalPrice" aria-describedby="baseprice_dollarsign" value="@product.TotalPrice.ToString("#,##0.00")">
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="form-group">
+            @{
+                string chkIsAvailableChecked = "";
+                if (product.IsAvailable)
+                {
+                    chkIsAvailableChecked = "checked";
+                }
+            }
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="chkIsAvailable" name="chkIsAvailable" @chkIsAvailableChecked>
+                <label class="custom-control-label" for="chkIsAvailable">This product is available for orders</label>
+            </div>
+        </div>
+
+
+        <button class="btn btn-sm btn-primary small">Update item</button>
+    </form>
+    <br /><br />
+    <div style="width: 300px; text-align: center; border: 2px dashed red; background-color: antiquewhite; margin-right: 0; margin-left: auto; padding: 15px;border-radius: 5px;">
+        <h2>Danger Zone</h2>
+        <form method="post" asp-page-handler="DeleteProduct" style="display: inline;">
+            <input type="hidden" name="txtProductId" value="@product.Id" />
+            <button class="btn btn-sm btn-danger small">Delete Item</button>
+        </form>
+    </div>
+}

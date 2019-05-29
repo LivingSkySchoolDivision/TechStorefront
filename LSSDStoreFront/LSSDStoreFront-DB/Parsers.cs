@@ -111,6 +111,8 @@ namespace LSSD.StoreFront.DB
             else
             {
                 if (value.Equals("1")) { return true; }
+                if (value.ToLower().Equals("on")) { return true; }
+                if (value.ToLower().Equals("off")) { return false; }
                 Boolean.TryParse(value, out bool parsedBool);
                 return parsedBool;
             }

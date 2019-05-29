@@ -3,6 +3,7 @@
 @using LSSD.StoreFront.DB;
 @using LSSD.StoreFront.Lib;
 @using Microsoft.Extensions.Configuration;
+@using System.Web;
 @inject IConfiguration config
 @namespace LSSD.StoreFront.FrontEnd.Pages
 @model LSSD.StoreFront.FrontEnd.Pages.ItemModel
@@ -37,7 +38,7 @@
             @if (product.IsAvailable)
             {
                 <div class="col-8">
-                    <p>@product.LongDescription</p>
+                    <p>@Html.Raw(HttpUtility.HtmlDecode(product.LongDescription))</p>
                 </div>
                 <div class="col-4">
                     <table class="table text-left table-sm">

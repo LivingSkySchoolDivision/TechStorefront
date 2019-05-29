@@ -90,6 +90,7 @@ namespace LSSDStoreFront_Tests.DB_Tests
         [InlineData("TRUE")]
         [InlineData("TrUe")]
         [InlineData("   true   ")]
+        [InlineData("on")]
         public void ToBool_ShouldParseCommonTrueValues(string given)
         {
             Assert.True(given.ToBool());
@@ -102,6 +103,7 @@ namespace LSSDStoreFront_Tests.DB_Tests
         [InlineData("FALSE")]
         [InlineData("FaLsE")]
         [InlineData("   false   ")]
+        [InlineData("off")]
         public void ToBool_ShouldParseCommonFalseValues(string given)
         {
             Assert.False(given.ToBool());
