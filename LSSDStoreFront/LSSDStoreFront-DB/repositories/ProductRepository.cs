@@ -58,6 +58,7 @@ namespace LSSD.StoreFront.DB.repositories
                 Category = _categoryRepository.Get(dataReader["CategoryId"].ToString().ToInt()),
                 IsGSTExempt = dataReader["IsGSTExempt"].ToString().ToBool(),
                 IsPSTExempt = dataReader["IsPSTExempt"].ToString().ToBool(),
+                InternalDescription = dataReader["InternalDescription"].ToString()
             };
         }
 
@@ -219,13 +220,14 @@ namespace LSSD.StoreFront.DB.repositories
                 {
                     Connection = connection,
                     CommandType = CommandType.Text,
-                    CommandText = "UPDATE Products SET CategoryId=@CATID, ProductName=@NAME, ProductDescription=@DESC, ProductLongDescription=@LDESC, ProductAlerts=@ALERT, Price=@PRICE, IsProductAvailable=@ISAVAIL, IsLimitedByStock=@ISLIMITDBYSTOCK, IsLimitedByDate=@ISLIMITEDBYDATE, IsSpecialOrderItem=@ISSPECIALORDER, AvailableFrom=@AVAILFROM, AvailableTo=@AVAILTO, ThumbnailFileName=@THUMBFILE, RecyclingFee=@RECYCLINGFEE WHERE Id=@OBJID  "
+                    CommandText = "UPDATE Products SET CategoryId=@CATID, ProductName=@NAME, InternalDescription=@INTDESC, ProductDescription=@DESC, ProductLongDescription=@LDESC, ProductAlerts=@ALERT, Price=@PRICE, IsProductAvailable=@ISAVAIL, IsLimitedByStock=@ISLIMITDBYSTOCK, IsLimitedByDate=@ISLIMITEDBYDATE, IsSpecialOrderItem=@ISSPECIALORDER, AvailableFrom=@AVAILFROM, AvailableTo=@AVAILTO, ThumbnailFileName=@THUMBFILE, RecyclingFee=@RECYCLINGFEE WHERE Id=@OBJID  "
                 })
                 {
                     sqlCommand.Parameters.AddWithValue("OBJID", product.Id);
                     sqlCommand.Parameters.AddWithValue("CATID", product.CategoryId);
                     sqlCommand.Parameters.AddWithValue("NAME", product.Name ?? string.Empty);
                     sqlCommand.Parameters.AddWithValue("DESC", product.Description ?? string.Empty);
+                    sqlCommand.Parameters.AddWithValue("INTDESC", product.InternalDescription ?? string.Empty);
                     sqlCommand.Parameters.AddWithValue("LDESC", product.LongDescription ?? string.Empty);
                     sqlCommand.Parameters.AddWithValue("ALERT", product.Alert ?? string.Empty);
                     sqlCommand.Parameters.AddWithValue("PRICE", product.BasePrice);
@@ -326,8 +328,8 @@ namespace LSSD.StoreFront.DB.repositories
                     {
                         Connection = connection,
                         CommandType = CommandType.Text,
-                        CommandText = "INSERT INTO Products(CategoryId, ProductName, ProductDescription, ProductLongDescription, Price, IsProductAvailable, IsLimitedByStock, IsLimitedByDate, IsSpecialOrderItem, AvailableFrom, AvailableTo, ThumbnailFileName, ProductAlerts, RecyclingFee) " +
-                                                    "VALUES(@CID, @NME, @DSC, @LDSC, @PRCE,  @LAVAIL, @LSTOCK, @LDATE, @LSCL, @DFRM, @DTO, @THMB, @ALRT, @RECYCLINGFEE)"
+                        CommandText = "INSERT INTO Products(CategoryId, ProductName, ProductDescription, ProductLongDescription, Price, IsProductAvailable, IsLimitedByStock, IsLimitedByDate, IsSpecialOrderItem, AvailableFrom, AvailableTo, ThumbnailFileName, ProductAlerts, RecyclingFee, InternalDescription) " +
+                                                    "VALUES(@CID, @NME, @DSC, @LDSC, @PRCE,  @LAVAIL, @LSTOCK, @LDATE, @LSCL, @DFRM, @DTO, @THMB, @ALRT, @RECYCLINGFEE, @INTDESC)"
                     })
                     {
                         sqlCommand.Parameters.Clear();
@@ -335,6 +337,7 @@ namespace LSSD.StoreFront.DB.repositories
                         sqlCommand.Parameters.AddWithValue("@NME", product.Name ?? string.Empty);
                         sqlCommand.Parameters.AddWithValue("@DSC", product.Description ?? string.Empty);
                         sqlCommand.Parameters.AddWithValue("@LDSC", product.Description ?? string.Empty);
+                        sqlCommand.Parameters.AddWithValue("@INTDESC", product.InternalDescription ?? string.Empty);
                         sqlCommand.Parameters.AddWithValue("@PRCE", product.TotalPrice);
                         sqlCommand.Parameters.AddWithValue("@LAVAIL", product.IsAvailable);
                         sqlCommand.Parameters.AddWithValue("@LSTOCK", product.IsLimitedByStock);

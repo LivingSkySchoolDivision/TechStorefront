@@ -36,6 +36,7 @@ namespace LSSD.StoreFront.Manager.Pages
                 IsGSTExempt = Request.Form["chkGSTExempt"].ToString().ToBool(),
                 IsPSTExempt = Request.Form["chkPSTExempt"].ToString().ToBool(),
                 IsAvailable = Request.Form["chkIsAvailable"].ToString().ToBool(),
+                InternalDescription = Request.Form["txtInternalDescription"].ToString()
             };
             
             ProductRepository productRepository = new ProductRepository(dbContext);
