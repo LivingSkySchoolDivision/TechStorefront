@@ -14,99 +14,110 @@
     UserFriendlyInventory Inventory = new UserFriendlyInventory(dbContext);
 
     Product product = Inventory.Item(productId);
-    ViewData["Title"] = product.Name;
 }
 
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <li class="breadcrumb-item"><a href="/Category/@product.Category.Id">@product.Category.Name</a></li>
-        <li class="breadcrumb-item active" aria-current="page">@product.Name</li>
-    </ol>
-</nav>
+@if (product == null)
+{
+    <h1>Product not found</h1>
+    <p>Sorry!</p>
+}
+
+@if (product != null)
+{
+    ViewData["Title"] = product.Name;
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/Category/@product.Category.Id">@product.Category.Name</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@product.Name</li>
+        </ol>
+    </nav>
 
 
-<div class="card">
-    <div class="card-header text-center">
-        <h4>@product.Name</h4>
-    </div>
-    <div class="card-body border-dark">
-        <h5>Description</h5>
+    <div class="card">
+        <div class="card-header text-center">
+            <h4>@product.Name</h4>
+        </div>
+        <div class="card-body border-dark">
+            <h5>Description</h5>
 
-        <div class="row">
+            <div class="row">
 
+                @if (product.IsAvailable)
+                {
+                    <div class="col-8">
+                        <p>@Html.Raw(HttpUtility.HtmlDecode(product.LongDescription))</p>
+                    </div>
+                    <div class="col-4">
+                        <table class="table text-left table-sm">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>
+                                        Price
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tr>
+                                <td class="table-active">Base Price</td>
+                                <td class="text-right">$@product.BasePrice.ToString("#,##0.00")</td>
+                            </tr>
+                            @if (product.RecyclingFee > 0)
+                            {
+                                <tr>
+                                    <td class="table-active"><a href="https://www.recyclemyelectronics.ca/sk/residential/environmental-handling-fee-ehf/" target="_blank"><abbr title="Environmental Handling Fee">EHF</abbr></a></td>
+                                    <td class="text-right">$@product.RecyclingFee.ToString("#,##0.00")</td>
+                                </tr>
+                            }
+                            @if (!product.IsGSTExempt)
+                            {
+                                <tr>
+                                    <td class="table-active">GST</td>
+                                    <td class="text-right">$@product.GSTAmount.ToString("#,##0.00")</td>
+                                </tr>
+                            }
+                            @if (!product.IsPSTExempt)
+                            {
+                                <tr>
+                                    <td class="table-active">PST</td>
+                                    <td class="text-right">$@product.PSTAmount.ToString("#,##0.00")</td>
+                                </tr>
+                            }
+                            <tr>
+                                <td class="table-active">Total Price</td>
+                                <td class="table-primary text-right"><b>$@product.TotalPrice.ToString("#,##0.00")</b></td>
+                            </tr>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-12">
+                        <p>@product.LongDescription</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card-footer text-muted">
             @if (product.IsAvailable)
             {
-                <div class="col-8">
-                    <p>@Html.Raw(HttpUtility.HtmlDecode(product.LongDescription))</p>
-                </div>
-                <div class="col-4">
-                    <table class="table text-left table-sm">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>
-                                    Price
-                                </th>
-                            </tr>
-                        </thead>
-                        <tr>
-                            <td class="table-active">Base Price</td>
-                            <td class="text-right">$@product.BasePrice.ToString("#,##0.00")</td>
-                        </tr>
-                        @if (product.RecyclingFee > 0)
-                        {
-                            <tr>
-                                <td class="table-active"><a href="https://www.recyclemyelectronics.ca/sk/residential/environmental-handling-fee-ehf/" target="_blank"><abbr title="Environmental Handling Fee">EHF</abbr></a></td>
-                                <td class="text-right">$@product.RecyclingFee.ToString("#,##0.00")</td>
-                            </tr>
-                        }
-                        @if (!product.IsGSTExempt)
-                        {
-                            <tr>
-                                <td class="table-active">GST</td>
-                                <td class="text-right">$@product.GSTAmount.ToString("#,##0.00")</td>
-                            </tr>
-                        }
-                        @if (!product.IsPSTExempt)
-                        {
-                            <tr>
-                                <td class="table-active">PST</td>
-                                <td class="text-right">$@product.PSTAmount.ToString("#,##0.00")</td>
-                            </tr>
-                        }
-                        <tr>
-                            <td class="table-active">Total Price</td>
-                            <td class="table-primary text-right"><b>$@product.TotalPrice.ToString("#,##0.00")</b></td>
-                        </tr>
-                    </table>
-                </div>
+                <form method="post" asp-page-handler="AddItemToCart" class="form-inline float-right">
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input type="hidden" name="txtProductId" value="@product.Id" />
+                        <input name="txtQuantity" class="form-control form-control-sm" type="number" value="1" min="1" max="9999" step="1" required />
+                    </div>
+                    <button type="submit" class="btn btn-success mb-2">Add to cart</button>
+                </form>
             }
             else
             {
-                <div class="col-12">
-                    <p>@product.LongDescription</p>
+                <div class="alert alert-danger" role="alert">
+                    This product is not available for purchase at this time.
                 </div>
             }
+
         </div>
-    </div>
-
-    <div class="card-footer text-muted">
-        @if (product.IsAvailable)
-        {
-            <form method="post" asp-page-handler="AddItemToCart" class="form-inline float-right">
-                <div class="form-group mx-sm-3 mb-2">
-                    <input type="hidden" name="txtProductId" value="@product.Id" />
-                    <input name="txtQuantity" class="form-control form-control-sm" type="number" value="1" min="1" max="9999" step="1" required />
-                </div>
-                <button type="submit" class="btn btn-success mb-2">Add to cart</button>
-            </form>
-        }
-        else {
-            <div class="alert alert-danger" role="alert">
-                This product is not available for purchase at this time.
-            </div>
-        }
 
     </div>
-
-</div>
+}

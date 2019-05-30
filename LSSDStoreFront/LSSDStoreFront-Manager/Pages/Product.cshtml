@@ -16,7 +16,7 @@
     ProductRepository productRepository = new ProductRepository(dbContext);
     ProductCategoryRepository categoryRepository = new ProductCategoryRepository(dbContext);
 
-    Product product = productRepository.Get(productId);
+    Product product = productRepository.Get(productId, true);
 }
 
 @if (product == null)

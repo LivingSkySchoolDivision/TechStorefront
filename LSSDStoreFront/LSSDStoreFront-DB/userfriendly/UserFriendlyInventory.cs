@@ -77,7 +77,7 @@ namespace LSSD.StoreFront.DB
             if (_allItems.ContainsKey(ItemID)) {
                 return _allItems[ItemID];
             } else {
-                return _nullProduct;
+                return null;
             }
         }
 

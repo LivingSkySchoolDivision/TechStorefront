@@ -117,6 +117,40 @@ namespace LSSD.StoreFront.DB.repositories
             return returnMe;
         }
 
+        public List<Product> GetDeleted()
+        {
+            List<Product> returnMe = new List<Product>();
+
+            using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand
+                {
+                    Connection = connection,
+                    CommandType = CommandType.Text,
+                    CommandText = "SELECT * FROM Products WHERE IsFlaggedForDeletion=1"
+                })
+                {
+                    sqlCommand.Connection.Open();
+
+                    SqlDataReader dbDataReader = sqlCommand.ExecuteReader();
+                    if (dbDataReader.HasRows)
+                    {
+                        while (dbDataReader.Read())
+                        {
+                            Product product = dataReaderToObject(dbDataReader);
+                            if (product != null)
+                            {
+                                returnMe.Add(product);
+                            }
+                        }
+                    }
+                    sqlCommand.Connection.Close();
+                }
+            } 
+            // Return the list of objects to the user
+            return returnMe;
+        }
+
         /// <summary>
         /// Return all products in the specified category.
         /// </summary>
@@ -168,20 +202,32 @@ namespace LSSD.StoreFront.DB.repositories
             return returnMe;
         }
 
+
+        public Product Get(int Id)
+        {
+            return Get(Id, false);
+        }
+
         /// <summary>
         /// Get a specific Product, given it's Id number.
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public Product Get(int Id)
+        public Product Get(int Id, bool IncludeDeleted)
         {
+            string SQL = "SELECT * FROM Products WHERE IsFlaggedForDeletion = 0 AND Id=@OBJID";
+            if (IncludeDeleted)
+            {
+                SQL = "SELECT * FROM Products WHERE Id=@OBJID";
+            }
+
             using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand
                 {
                     Connection = connection,
                     CommandType = CommandType.Text,
-                    CommandText = SQL_Select + " AND Id=@OBJID"
+                    CommandText = SQL
                 })
                 {
                     sqlCommand.Parameters.AddWithValue("OBJID", Id);
