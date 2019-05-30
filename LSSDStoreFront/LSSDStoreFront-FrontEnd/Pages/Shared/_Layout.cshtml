@@ -43,6 +43,13 @@
               integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" />
     </environment>
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <style>
+        .fa.home:hover {
+            color: red;
+        }
+    </style>
+
 </head>
 <body>
     <header>
@@ -68,19 +75,19 @@
                         @if (UserAccessGranted)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark btn btn-sm btn-outline-light" asp-area="" asp-page="/Index">Home</a>
+                                <a class="nav-link text-dark btn btn-sm btn-outline-light" asp-area="" asp-page="/Index"><i class="fas fa-home"></i> Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark btn btn-sm btn-outline-light" asp-area="" asp-page="/ShoppingCart">Shopping Cart @shoppingCartItemCountDisplay</a>
+                                <a class="nav-link text-dark btn btn-sm btn-outline-light" asp-area="" asp-page="/ShoppingCart"><i class="fas fa-shopping-cart"></i> Shopping Cart @shoppingCartItemCountDisplay</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark btn btn-sm btn-outline-light" asp-area="" asp-page="/Orders">Orders</a>
+                                <a class="nav-link text-dark btn btn-sm btn-outline-light" asp-area="" asp-page="/Orders"><i class="fas fa-archive"></i> Orders</a>
                             </li>
                             <li class="nav-item">
-                                <b class="nav-link text-dark">@UserDisplayName</b>
+                                <b class="nav-link text-dark"><i class="fas fa-user-circle"></i> @UserDisplayName</b>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link btn btn-sm btn-outline-light" asp-area="" asp-controller="Account" asp-action="SignOut">Sign out</a>
+                                <a class="nav-link btn btn-sm btn-outline-light" asp-area="" asp-controller="Account" asp-action="SignOut"><i class="fas fa-sign-out-alt"></i> Sign out</a>
                             </li>
                         }
                     </ul>
