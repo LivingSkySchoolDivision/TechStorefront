@@ -15,6 +15,7 @@ namespace LSSD.StoreFront.DB.repositories
         // Retained for the lifetime of this object.
         private readonly DatabaseContext _dbConnection;
         private readonly ProductCategoryRepository _categoryRepository;
+        private readonly ProductImageRepository _imageRepository;
 
         // Base SQL query to use. Methods below may add more things to this (like " WHERE" clauses), or
         // they may use their own queries.
@@ -25,6 +26,7 @@ namespace LSSD.StoreFront.DB.repositories
         {
             this._dbConnection = DatabaseConnection;
             this._categoryRepository = new ProductCategoryRepository(this._dbConnection);
+            this._imageRepository = new ProductImageRepository(this._dbConnection);
         }
 
         /// <summary>
@@ -46,7 +48,6 @@ namespace LSSD.StoreFront.DB.repositories
                 Description = dataReader["ProductDescription"].ToString(),
                 LongDescription = dataReader["ProductLongDescription"].ToString(),
                 Alert = dataReader["ProductAlerts"].ToString(),
-                ThumbnailFileName = dataReader["ThumbnailFileName"].ToString(),
                 BasePrice = dataReader["Price"].ToString().ToDecimal(),
                 IsAvailable = dataReader["IsProductAvailable"].ToString().ToBool(),
                 IsLimitedByStock = dataReader["IsLimitedByStock"].ToString().ToBool(),
@@ -58,7 +59,8 @@ namespace LSSD.StoreFront.DB.repositories
                 Category = _categoryRepository.Get(dataReader["CategoryId"].ToString().ToInt()),
                 IsGSTExempt = dataReader["IsGSTExempt"].ToString().ToBool(),
                 IsPSTExempt = dataReader["IsPSTExempt"].ToString().ToBool(),
-                InternalDescription = dataReader["InternalDescription"].ToString()
+                InternalDescription = dataReader["InternalDescription"].ToString(),
+                HasImage = _imageRepository.DoesProductHaveImage(dataReader["Id"].ToString().ToInt())
             };
         }
 

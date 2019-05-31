@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LSSD.StoreFront.Lib.Products;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,7 +14,20 @@ namespace LSSD.StoreFront.Lib
         public string LongDescription { get; set; }
         public string InternalDescription { get; set; }
         public string Alert { get; set; }
-        public string ThumbnailFileName { get; set; }
+        public string ThumbnailFileName
+        {
+            get
+            {
+                if (this.HasImage)
+                {
+                    return "/api/ProductImage/" + this.Id;
+                } else
+                {
+                    return string.Empty;
+                }
+            }
+        }
+        public bool HasImage { get; set; }
         public decimal RecyclingFee { get; set; }
         public decimal BasePrice { get; set; }
         public bool IsAvailable { get; set; }

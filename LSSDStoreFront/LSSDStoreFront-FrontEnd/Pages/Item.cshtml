@@ -36,24 +36,33 @@
 
 
     <div class="card">
-        <div class="card-header text-center">
-            <h4>@product.Name</h4>
-        </div>
-        <div class="card-body border-dark">
-            <h5>Description</h5>
-
+        <div class="card-body border-dark p-5">
             <div class="row">
+                <h2>@product.Name</h2>
+                <br /><br /><br />
+            </div>
+            <div class="row">
+                <div class="col-8">
+                    
 
-                @if (product.IsAvailable)
-                {
-                    <div class="col-8">
-                        <p>@Html.Raw(HttpUtility.HtmlDecode(product.LongDescription))</p>
-                    </div>
-                    <div class="col-4">
+                    @if (product.HasImage)
+                    {
+                        <div class="p-4">
+                            <img src="@product.ThumbnailFileName" style="max-height: 180px; max-width: 286px;" />
+                        </div>
+                    }
+
+                    <p>@Html.Raw(HttpUtility.HtmlDecode(product.LongDescription))</p>
+                </div>
+
+
+                <div class="col-4">
+                    @if (product.IsAvailable)
+                    {
                         <table class="table text-left table-sm">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th>
+                                    <th colspan="2">
                                         Price
                                     </th>
                                 </tr>
@@ -85,39 +94,30 @@
                             }
                             <tr>
                                 <td class="table-active">Total Price</td>
-                                <td class="table-primary text-right"><b>$@product.TotalPrice.ToString("#,##0.00")</b></td>
+                                <td class="table-primary text-right"><b><big>CAD $@product.TotalPrice.ToString("#,##0.00")</big></b></td>
                             </tr>
                         </table>
-                    </div>
-                }
-                else
-                {
-                    <div class="col-12">
-                        <p>@product.LongDescription</p>
-                    </div>
-                }
+                        @if (product.IsAvailable)
+                        {
+                            <form method="post" asp-page-handler="AddItemToCart" class="form-inline float-right">
+                                <div class="form-group mx-sm-3 mb-2">
+                                    <input type="hidden" name="txtProductId" value="@product.Id" />
+                                    <input name="txtQuantity" class="form-control form-control-sm" type="number" value="1" min="1" max="9999" step="1" required />
+                                </div>
+                                <button type="submit" class="btn btn-success mb-2">Add to cart</button>
+                            </form>
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            This product is not available for purchase at this time.
+                        </div>
+                    }
+                </div>
             </div>
         </div>
 
-        <div class="card-footer text-muted">
-            @if (product.IsAvailable)
-            {
-                <form method="post" asp-page-handler="AddItemToCart" class="form-inline float-right">
-                    <div class="form-group mx-sm-3 mb-2">
-                        <input type="hidden" name="txtProductId" value="@product.Id" />
-                        <input name="txtQuantity" class="form-control form-control-sm" type="number" value="1" min="1" max="9999" step="1" required />
-                    </div>
-                    <button type="submit" class="btn btn-success mb-2">Add to cart</button>
-                </form>
-            }
-            else
-            {
-                <div class="alert alert-danger" role="alert">
-                    This product is not available for purchase at this time.
-                </div>
-            }
-
-        </div>
 
     </div>
 }

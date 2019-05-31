@@ -9,6 +9,8 @@ using LSSD.StoreFront.DB;
 using Microsoft.Extensions.Configuration;
 using LSSD.StoreFront.DB.repositories;
 using System.Web;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace LSSD.StoreFront.Manager.Pages
 {
@@ -30,7 +32,6 @@ namespace LSSD.StoreFront.Manager.Pages
                 Description = HttpUtility.HtmlEncode(Request.Form["txtShortDescription"].ToString()),
                 LongDescription = HttpUtility.HtmlEncode(Request.Form["txtLongDescription"].ToString()),
                 CategoryId = Request.Form["drpCategoryId"].ToString().ToInt(),
-                ThumbnailFileName = Request.Form["txtThumbnail"].ToString(),
                 BasePrice = Request.Form["txtBasePrice"].ToString().ToDecimal(),
                 RecyclingFee = Request.Form["txtRecyclingFee"].ToString().ToDecimal(),
                 IsGSTExempt = Request.Form["chkGSTExempt"].ToString().ToBool(),
@@ -56,6 +57,22 @@ namespace LSSD.StoreFront.Manager.Pages
             productRepository.Delete(updatedProduct);
 
             return RedirectToPage("/Products");
+        }
+
+        public void OnPostUpdateThumbnail()
+        {
+            int productId = Request.Form["txtProductId"].ToString().ToInt();
+            if (productId > 0) {
+                IFormFile file = Request.Form.Files[0];
+                if (file.Length > 0)
+                {
+                    MemoryStream ms = new MemoryStream();
+                    file.CopyTo(ms);
+
+                    ProductImageRepository productImageRepo = new ProductImageRepository(dbContext);
+                    productImageRepo.Create(productId, file.ContentType, ms.ToArray());   
+                }
+            }
         }
     }
 }
