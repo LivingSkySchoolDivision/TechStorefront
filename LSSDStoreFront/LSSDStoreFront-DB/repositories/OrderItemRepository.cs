@@ -21,8 +21,16 @@ namespace LSSD.StoreFront.DB.repositories
             {
                 OrderThumbprint = dataReader["OrderThumbprint"].ToString(),
                 Name = dataReader["ItemName"].ToString(),
-                ItemPrice = dataReader["ItemPrice"].ToString().ToDecimal(),
-                TotalPrice = dataReader["TotalPrice"].ToString().ToDecimal(),
+                ItemBasePrice = dataReader["ItemPrice"].ToString().ToDecimal(),
+                ItemGST = dataReader["ItemGST"].ToString().ToDecimal(),
+                ItemPST = dataReader["ItemPST"].ToString().ToDecimal(),
+                ItemEHF = dataReader["ItemEHF"].ToString().ToDecimal(),
+                ItemPriceWithTax = dataReader["ItemPriceWithTax"].ToString().ToDecimal(),
+                TotalBasePrice = dataReader["TotalPreTaxPrice"].ToString().ToDecimal(),
+                TotalGST = dataReader["TotalGST"].ToString().ToDecimal(),
+                TotalPST = dataReader["TotalPST"].ToString().ToDecimal(),
+                TotalEHF = dataReader["TotalEHF"].ToString().ToDecimal(),
+                TotalPriceWithTax = dataReader["TotalPrice"].ToString().ToDecimal(),
                 ProductId = dataReader["ProductId"].ToString().ToInt(),
                 Quantity = dataReader["Quantity"].ToString().ToInt()
             };
@@ -76,17 +84,25 @@ namespace LSSD.StoreFront.DB.repositories
                     {
                         Connection = connection,
                         CommandType = CommandType.Text,
-                        CommandText = "INSERT INTO OrderItems(OrderThumbprint, ItemName, ItemPrice, TotalPrice, ProductId, Quantity) " +
-                                                    "VALUES(@OTHUMB, @INAME, @IPRICE, @TPRICE, @PRODID, @QUAN)"
+                        CommandText = "INSERT INTO OrderItems(OrderThumbprint, ItemName, ProductId, Quantity, TotalPrice, TotalPreTaxPrice, TotalGST, TotalPST, TotalEHF, ItemPrice, ItemGST, ItemPST, ItemEHF, ItemPriceWithTax) " +
+                                                    "VALUES(@OTHUMB, @INAME, @PRODID, @QUAN, @TOTPRICE, @TOTPRETAXPRICE, @TOTGST, @TOTPST, @TOTEHF, @ITPRETAXPRICE, @ITGST, @ITPST, @ITEHF, @ITTOTALPRICE)"
                     })
                     {
                         sqlCommand.Parameters.Clear();
                         sqlCommand.Parameters.AddWithValue("@OTHUMB", item.OrderThumbprint);
                         sqlCommand.Parameters.AddWithValue("@INAME", item.Name);
-                        sqlCommand.Parameters.AddWithValue("@IPRICE", item.ItemPrice);
-                        sqlCommand.Parameters.AddWithValue("@TPRICE", item.TotalPrice);
                         sqlCommand.Parameters.AddWithValue("@PRODID", item.ProductId);
                         sqlCommand.Parameters.AddWithValue("@QUAN", item.Quantity);
+                        sqlCommand.Parameters.AddWithValue("@TOTPRICE", item.TotalPriceWithTax);
+                        sqlCommand.Parameters.AddWithValue("@TOTPRETAXPRICE", item.TotalBasePrice);
+                        sqlCommand.Parameters.AddWithValue("@TOTGST", item.TotalGST);
+                        sqlCommand.Parameters.AddWithValue("@TOTPST", item.TotalPST);
+                        sqlCommand.Parameters.AddWithValue("@TOTEHF", item.TotalEHF);
+                        sqlCommand.Parameters.AddWithValue("@ITPRETAXPRICE", item.ItemBasePrice);
+                        sqlCommand.Parameters.AddWithValue("@ITGST", item.ItemGST);
+                        sqlCommand.Parameters.AddWithValue("@ITPST", item.ItemPST);
+                        sqlCommand.Parameters.AddWithValue("@ITEHF", item.ItemEHF);
+                        sqlCommand.Parameters.AddWithValue("@ITTOTALPRICE", item.ItemPriceWithTax);
                         sqlCommand.Connection.Open();
                         sqlCommand.ExecuteNonQuery();
                         sqlCommand.Connection.Close();

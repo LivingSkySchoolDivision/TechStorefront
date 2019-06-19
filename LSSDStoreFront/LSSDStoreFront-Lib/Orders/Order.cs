@@ -12,7 +12,13 @@ namespace LSSD.StoreFront.Lib
         public DateTime OrderDate { get; set; }
         public string SubmittedBy { get; set; }
         public string BudgetAccountNumber { get; set; }
+
         public decimal OrderGrandTotal { get; set; }
+        public decimal OrderSubTotal { get; set; }
+        public decimal TotalGST { get; set; }
+        public decimal TotalPST { get; set; }
+        public decimal TotalEHF { get; set; }
+
         public int OrderTotalItems { get; set; }
         public string CustomerNotes { get; set; }
         public string ManagerNotes { get; set; }

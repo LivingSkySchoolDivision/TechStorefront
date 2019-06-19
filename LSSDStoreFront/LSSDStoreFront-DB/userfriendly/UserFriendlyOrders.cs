@@ -67,15 +67,22 @@ namespace LSSD.StoreFront.DB
                     {
                         OrderThumbprint = "WILL-GET-REPLACED",
                         Name = scitem.Product.Name,
-                        ItemPrice = scitem.Product.TotalPrice,
-                        TotalPrice = scitem.TotalPrice,
+                        ItemBasePrice = scitem.Product.BasePrice,
+                        ItemGST = scitem.Product.GSTAmount,
+                        ItemPST = scitem.Product.PSTAmount,
+                        ItemEHF = scitem.Product.RecyclingFee,
+                        ItemPriceWithTax = scitem.Product.TotalPrice,
+                        TotalBasePrice = (decimal)(scitem.Product.BasePrice * scitem.Quantity),
+                        TotalEHF = (decimal)(scitem.Product.RecyclingFee * scitem.Quantity),
+                        TotalPST = (decimal)(scitem.Product.PSTAmount * scitem.Quantity),
+                        TotalGST = (decimal)(scitem.Product.GSTAmount * scitem.Quantity),
+                        TotalPriceWithTax = (decimal)(scitem.Product.TotalPrice * scitem.Quantity),
                         ProductId = scitem.ProductId,
-                        Quantity = scitem.Quantity
+                        Quantity = scitem.Quantity,
                     });
                 }
             }
-
-
+            
             OrderStatusDetail newOrderStatusDetail = new OrderStatusDetail()
             {
                 OrderThumbprint = "WILL-GET-REPLACED",
@@ -89,13 +96,19 @@ namespace LSSD.StoreFront.DB
             Order newOrder = new Order()
             {
                 OrderThumbprint = "WILL-GET-REPLACED",
-                OrderDate = DateTime.Now,
                 UserThumbprint = userThumbprint.Value,
+                OrderDate = DateTime.Now,
+                SubmittedBy = SubmittedBy,
                 BudgetAccountNumber = BudgetAccountNumber,
                 CustomerNotes = customerNotes,
                 StatusDetails = new List<OrderStatusDetail>() { newOrderStatusDetail },
-                SubmittedBy = SubmittedBy,
-                Items = newOrderItems
+                Items = newOrderItems,
+                OrderTotalItems = newOrderItems.Sum(x => x.Quantity),
+                OrderSubTotal = newOrderItems.Sum(x => x.TotalBasePrice),
+                OrderGrandTotal = newOrderItems.Sum(x => x.TotalPriceWithTax),
+                TotalEHF = newOrderItems.Sum(x => x.TotalEHF),
+                TotalGST = newOrderItems.Sum(x => x.TotalGST),
+                TotalPST = newOrderItems.Sum(x => x.TotalPST)
             };
 
             string orderThumbprint = _orderRepository.Create(newOrder);

@@ -9,7 +9,7 @@
 <div style="">
     <h1>My Shopping Cart</h1>
     <p>
-        <i>@Model.ShoppingCart.TotalItems Items</i>
+        <i>@Model.ShoppingCart.TotalItemCount Items</i>
     </p>
     <div style="text-align: right;">
         <form method="post" asp-page-handler="ClearCart" style="display: inline;">
@@ -21,32 +21,44 @@
         <tr>
             <th class="text-left">Item</th>
             <th class="text-center">Quantity</th>
-            <th class="text-right">Item Price</th>
+            <th class="text-right">Price<br/><small>Per Item</small></th>
             <th class="text-right"></th>
-            <th class="text-right">Total Price</th>
+            <th class="text-right">Total Price<br /><small>Before taxes/fees</small></th>
         </tr>
         @foreach (ShoppingCartItem item in Model.ShoppingCart.Items)
         {
-            <tr>
-                <td class="text-left">@item.Product.Name</td>
-                <td class="text-center">
-                    <form method="post" asp-page-handler="UpdateQuantity" style="display: inline;">
-                        <input type="hidden" name="productID" value="@item.ProductId" />
-                        <input class="form-control" type="text" maxlength="4" style="width: 60px;text-align:center; display: inline;" name="quantity" value="@item.Quantity" />
-                        <button class="btn btn-sm btn-link small">Update quantity</button>
-                    </form>
-                    <form method="post" asp-page-handler="RemoveItem" style="display: inline;">
-                        <input type="hidden" name="productID" value="@item.ProductId" />
-                        <button class="btn btn-sm btn-link small">Remove</button>
-                    </form>
-                </td>
-                <td class="text-right">$@item.Product.TotalPrice.ToString("#,##0.00")</td>
-                <td class="text-right">&times;@item.Quantity</td>
-                <td class="text-right">$@item.TotalPrice.ToString("#,##0.00")</td>
-            </tr>
+    <tr>
+        <td class="text-left">@item.Product.Name</td>
+        <td class="text-center">
+            <form method="post" asp-page-handler="UpdateQuantity" style="display: inline;">
+                <input type="hidden" name="productID" value="@item.ProductId" />
+                <input class="form-control" type="text" maxlength="4" style="width: 60px;text-align:center; display: inline;" name="quantity" value="@item.Quantity" />
+                <button class="btn btn-sm btn-link small">Update quantity</button>
+            </form>
+            <form method="post" asp-page-handler="RemoveItem" style="display: inline;">
+                <input type="hidden" name="productID" value="@item.ProductId" />
+                <button class="btn btn-sm btn-link small">Remove</button>
+            </form>
+        </td>
+        <td class="text-right">$@item.Product.BasePrice.ToString("#,##0.00")</td>
+        <td class="text-right">&times;@item.Quantity</td>
+        <td class="text-right">$@item.TotalBasePrice.ToString("#,##0.00")</td>
+    </tr>
         }
         <tr>
-            <td colspan="5" class="text-right"><b>Grand Total:</b> $@Model.ShoppingCart.TotalCost.ToString("#,##0.00")</td>
+            <td colspan="5" class="text-right">Sub Total: $@Model.ShoppingCart.SubTotal.ToString("#,##0.00")</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="text-right">Total GST: $@Model.ShoppingCart.TotalGST.ToString("#,##0.00")</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="text-right">Total PST: $@Model.ShoppingCart.TotalPST.ToString("#,##0.00")</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="text-right">Total <a href="https://www.recyclemyelectronics.ca/sk/residential/environmental-handling-fee-ehf/" target="_blank"><abbr title="Environmental Handling Fee">EHF</abbr></a>: $@Model.ShoppingCart.TotalEHF.ToString("#,##0.00")</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="text-right"><big><b>Grand Total:</b> $@Model.ShoppingCart.GrandTotal.ToString("#,##0.00")</big></td>
         </tr>
         <tr>
             <td colspan="5" class="text-right">

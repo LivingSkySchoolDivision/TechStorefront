@@ -42,7 +42,7 @@ namespace LSSD.StoreFront.Manager
             {
                 var policy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
-                    .RequireClaim("groups", ManagerSettings.AccessSecurityGroupOID)
+                    .RequireClaim("groups", Configuration.GetSection("AccessControl")["Manager"])
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             })

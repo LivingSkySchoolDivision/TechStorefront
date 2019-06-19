@@ -75,23 +75,26 @@
 
                         @if (product.IsAvailable)
                         {
-                            <div style="position: relative; width: 100%;">
+                    <div style="position: relative; width: 100%;">
 
-                                <div style="text-align: right;padding: 10px; padding-right:0px; padding-bottom:0px; font-size: 26px; font-weight: bold;">
-                                    $@product.TotalPrice.ToString("#,##0.00")
+                        <div style="text-align: right;padding: 10px; padding-right:0px; padding-bottom:0px; font-size: 26px; font-weight: bold;">
+                            $@product.BasePrice.ToString("#,##0.00")
+                        </div>
+                        <div style="text-align: right; font-size: 12px; font-weight: normal;">
+                            <b>$@product.TotalPrice.ToString("#,##0.00")</b> after taxes/fees
+                        </div>
+
+                        <div style="text-align: right; padding: 5px; padding-right:0px;">
+                            <form method="post" asp-page-handler="AddItemToCart" style="display: inline;">
+                                <div class="input-group" style="display: inline;">
+                                    <input name="txtQuantity" class="form-control-sm form-control d-inline" type="number" value="1" min="1" max="9999" step="1" style="width: 75px;" required />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary mb-1 d-inline" style="width: 100px;">Add to cart</button>
+                                    <input type="hidden" name="txtProductId" value="@product.Id" />
                                 </div>
+                            </form>
+                        </div>
 
-                                <div style="text-align: right; padding: 5px; padding-right:0px;">
-                                    <form method="post" asp-page-handler="AddItemToCart" style="display: inline;">
-                                        <div class="input-group" style="display: inline;">
-                                            <input name="txtQuantity" class="form-control-sm form-control d-inline" type="number" value="1" min="1" max="9999" step="1" style="width: 75px;" required />
-                                            <button type="submit" class="btn btn-sm btn-outline-secondary mb-1 d-inline" style="width: 100px;">Add to cart</button>
-                                            <input type="hidden" name="txtProductId" value="@product.Id" />
-                                        </div>
-                                    </form>
-                                </div>
-
-                            </div>
+                    </div>
                         }
                         else
                         {

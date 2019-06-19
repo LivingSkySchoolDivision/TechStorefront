@@ -24,7 +24,7 @@
         <th class="text-left">Item</th>
         <th class="text-right">Item Price</th>
         <th class="text-center">Quantity</th>
-        <th class="text-right">Total Price</th>
+        <th class="text-right">Total Price<br /><small>Before taxes/fees</small></th>
     </tr>
     @foreach (ShoppingCartItem item in ShoppingCart.Items)
     {
@@ -32,11 +32,24 @@
             <td class="text-left">@item.Product.Name</td>
             <td class="text-right">$@item.Product.TotalPrice.ToString("#,##0.00")</td>
             <td class="text-center">&times;@item.Quantity</td>
-            <td class="text-right">$@item.TotalPrice.ToString("#,##0.00")</td>
+            <td class="text-right">$@item.TotalBasePrice.ToString("#,##0.00")</td>
         </tr>
     }
+
     <tr>
-        <td colspan="5" class="text-right"><b>Order Total:</b> $@ShoppingCart.TotalCost.ToString("#,##0.00")</td>
+        <td colspan="5" class="text-right">Sub Total: $@ShoppingCart.SubTotal.ToString("#,##0.00")</td>
+    </tr>
+    <tr>
+        <td colspan="5" class="text-right">Total GST: $@ShoppingCart.TotalGST.ToString("#,##0.00")</td>
+    </tr>
+    <tr>
+        <td colspan="5" class="text-right">Total PST: $@ShoppingCart.TotalPST.ToString("#,##0.00")</td>
+    </tr>
+    <tr>
+        <td colspan="5" class="text-right">Total <a href="https://www.recyclemyelectronics.ca/sk/residential/environmental-handling-fee-ehf/" target="_blank"><abbr title="Environmental Handling Fee">EHF</abbr></a>: $@ShoppingCart.TotalEHF.ToString("#,##0.00")</td>
+    </tr>
+    <tr>
+        <td colspan="5" class="text-right"><big><b>Grand Total:</b> $@ShoppingCart.GrandTotal.ToString("#,##0.00")</big></td>
     </tr>
     <tr>
         <td colspan="5" class="text-right">
@@ -57,15 +70,21 @@
         Each order may only be associated with <b>one</b> budget account number. Split your order into multiple smaller orders if you wish to use multiple budget account numbers.
     </p>
     <br />
-    <h2>Notes</h2>
-    <p>
-        <textarea name="txtCustomerNotes" class="form-control" id="customerNotes" rows="3"></textarea>
+    <h2>Customer Notes</h2>
+    <p>        
+        <textarea placeholder="Enter any notes you have for this order in this text box." name="txtCustomerNotes" class="form-control" id="customerNotes" rows="3"></textarea>
     </p>
     <br />
     <h2>Verify and validate</h2>
-    <p>Please make sure that all above information is correct before submitting your order. </p>
-    <p>Order changes <i>must</i> go through help desk tickets, and may delay your order.</p>
-
+    <div class="alert alert-danger">
+        <div style="font-size: 50px; color: rgba(255,0,0,0.6); position: relative; left: 0; top: 0; padding-right: 15px; vertical-align: middle; float: left;">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div style="padding-top: 10px;">
+            <p>Please make sure that all above information is correct before submitting your order. </p>
+            <p>Changes to your order <i>must</i> go through help desk tickets, and may delay your order.</p>
+        </div>
+    </div>
     <div style="text-align: right; width: 100%">
         <button class="btn btn-success btn-lg">Place Order</button>
     </div>

@@ -11,7 +11,7 @@ namespace LSSD.StoreFront.Lib
         public int Quantity { get; set; }
         public Product Product { get; set; }
 
-        public decimal TotalPrice {
+        public decimal TotalPriceWithTax {
             get
             {
                 if (Product != null)
@@ -23,5 +23,69 @@ namespace LSSD.StoreFront.Lib
                 }
             }
         }
+
+        public decimal TotalBasePrice
+        {
+            get
+            {
+                if (Product != null)
+                {
+                    return Product.BasePrice * Quantity;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+        public decimal TotalGST
+        {
+            get
+            {
+                if (Product != null)
+                {
+                    return Product.GSTAmount * Quantity;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+
+        public decimal TotalPST
+        {
+            get
+            {
+                if (Product != null)
+                {
+                    return Product.PSTAmount * Quantity;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public decimal TotalEHF
+        {
+            get
+            {
+                if (Product != null)
+                {
+                    return Product.RecyclingFee * Quantity;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+
+
+
     }
 }

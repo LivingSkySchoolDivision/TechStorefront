@@ -44,7 +44,7 @@ namespace LSSD.StoreFront.FrontEnd
             {
                 var policy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
-                    .RequireClaim("groups", FrontendSettings.AccessSecurityGroupOID)
+                    .RequireClaim("groups", Configuration.GetSection("AccessControl")["FrontEnd"])
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             })

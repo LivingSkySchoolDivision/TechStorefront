@@ -37,12 +37,16 @@ namespace LSSD.StoreFront.DB.repositories
                 OrderDate = dataReader["OrderDate"].ToString().ToDateTime(),
                 SubmittedBy = dataReader["SubmittedByFullName"].ToString(),
                 BudgetAccountNumber = dataReader["BudgetAccountNumber"].ToString(),
-                OrderGrandTotal = dataReader["OrderGrandTotal"].ToString().ToDecimal(),
                 CustomerNotes = dataReader["CustomerNotes"].ToString(),
                 ManagerNotes = dataReader["ManagerNotes"].ToString(),
                 OrderTotalItems = dataReader["OrderTotalItems"].ToString().ToInt(),
                 Items = items,
-                StatusDetails = statusDetails
+                StatusDetails = statusDetails,
+                OrderGrandTotal = dataReader["OrderGrandTotal"].ToString().ToDecimal(),
+                OrderSubTotal = dataReader["OrderSubTotal"].ToString().ToDecimal(),
+                TotalEHF = dataReader["TotalEHF"].ToString().ToDecimal(),
+                TotalGST = dataReader["TotalGST"].ToString().ToDecimal(),
+                TotalPST = dataReader["TotalPST"].ToString().ToDecimal(),
             };
         }
                 
@@ -87,8 +91,6 @@ namespace LSSD.StoreFront.DB.repositories
             string orderThumbprint = Crypto.Hash(order.UserThumbprint + ":" + order.BudgetAccountNumber + ":" + DateTime.Now.ToLongDateString() + ":" + DateTime.Now.ToLongTimeString());
 
             // Calculate some fields regardless of what was sent to this method
-            int numItems = order.Items.Sum(x => x.Quantity);
-            decimal orderGrandTotal = order.Items.Sum(x => (x.ItemPrice * x.Quantity));
 
             using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
             {
@@ -96,8 +98,8 @@ namespace LSSD.StoreFront.DB.repositories
                 {
                     Connection = connection,
                     CommandType = CommandType.Text,
-                    CommandText = "INSERT INTO Orders(OrderThumbprint, UserThumbprint, OrderDate, SubmittedByFullName, BudgetAccountNumber, OrderGrandTotal, CustomerNotes, ManagerNotes, OrderTotalItems) " +
-                                                "VALUES(@OTP,@UTP,@ODATE,@SUBMITTEDBY,@BUDGETNUM, @GRANDTOTAL, @CUSTNOTES, @MANNOTES, @NUMITEMS)"
+                    CommandText = "INSERT INTO Orders(OrderThumbprint, UserThumbprint, OrderDate, SubmittedByFullName, BudgetAccountNumber, OrderGrandTotal, CustomerNotes, ManagerNotes, OrderTotalItems, OrderSubTotal, TotalGST, TotalPST, TotalEHF) " +
+                                                "VALUES(@OTP,@UTP,@ODATE,@SUBMITTEDBY,@BUDGETNUM, @GRANDTOTAL, @CUSTNOTES, @MANNOTES, @NUMITEMS, @SUBTOTAL, @TOTGST, @TOTPST, @TOTEHF)"
                 })
                 {
                     sqlCommand.Parameters.Clear();
@@ -106,10 +108,14 @@ namespace LSSD.StoreFront.DB.repositories
                     sqlCommand.Parameters.AddWithValue("@ODATE", DateTime.Now);
                     sqlCommand.Parameters.AddWithValue("@SUBMITTEDBY", order.SubmittedBy);
                     sqlCommand.Parameters.AddWithValue("@BUDGETNUM", order.BudgetAccountNumber);
-                    sqlCommand.Parameters.AddWithValue("@GRANDTOTAL", orderGrandTotal);
+                    sqlCommand.Parameters.AddWithValue("@GRANDTOTAL", order.OrderGrandTotal);
                     sqlCommand.Parameters.AddWithValue("@CUSTNOTES", order.CustomerNotes ?? string.Empty);
                     sqlCommand.Parameters.AddWithValue("@MANNOTES", order.ManagerNotes ?? string.Empty);
-                    sqlCommand.Parameters.AddWithValue("@NUMITEMS", numItems);
+                    sqlCommand.Parameters.AddWithValue("@NUMITEMS", order.OrderTotalItems);
+                    sqlCommand.Parameters.AddWithValue("@SUBTOTAL", order.OrderSubTotal);
+                    sqlCommand.Parameters.AddWithValue("@TOTGST", order.TotalGST);
+                    sqlCommand.Parameters.AddWithValue("@TOTPST", order.TotalPST);
+                    sqlCommand.Parameters.AddWithValue("@TOTEHF", order.TotalEHF);
                     sqlCommand.Connection.Open();
                     sqlCommand.ExecuteNonQuery();
                     sqlCommand.Connection.Close();

@@ -18,23 +18,47 @@ namespace LSSD.StoreFront.DB
             }
         }
 
-        public decimal TotalCost
+        public decimal GrandTotal
         {
             get
             {
-                decimal returnMe = (decimal)0;
-                foreach(ShoppingCartItem item in this.Items)
-                {
-                    if (item.Product != null)
-                    {
-                        returnMe += (item.Product.TotalPrice * item.Quantity);
-                    }                    
-                }
-                return returnMe;
+                return (this.Items.Sum(x => x.TotalPriceWithTax));
             }
         }
 
-        public int TotalItems
+        public decimal SubTotal
+        {
+            get
+            {
+                return (this.Items.Sum(x => x.TotalBasePrice));
+            }
+        }
+        
+        public decimal TotalGST
+        {
+            get
+            {
+                return (this.Items.Sum(x => x.TotalGST));
+            }
+        }
+
+        public decimal TotalPST
+        {
+            get
+            {
+                return (this.Items.Sum(x => x.TotalPST));
+            }
+        }
+
+        public decimal TotalEHF
+        {
+            get
+            {
+                return (this.Items.Sum(x => x.TotalEHF));
+            }
+        }
+
+        public int TotalItemCount
         {
             get
             {

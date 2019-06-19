@@ -6,7 +6,7 @@
     bool UserAccessGranted = false;
     if (User.Identity.IsAuthenticated)
     {
-        if (User.HasClaim("groups", FrontendSettings.AccessSecurityGroupOID))
+        if (User.HasClaim("groups", config.GetSection("AccessControl")["FrontEnd"]))
         {
             UserAccessGranted = true;
         }
@@ -20,7 +20,7 @@
         UserDisplayName = ((System.Security.Claims.ClaimsIdentity)User.Identity).Claims.Where(c => c.Type == "name").FirstOrDefault().Value;
         DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString(FrontendSettings.ConnectionStringName));
         UserFriendlyShoppingCart ShoppingCart = new UserFriendlyShoppingCart(dbContext, User.Identity.Name);
-        int shoppingCartItems = ShoppingCart.TotalItems;
+        int shoppingCartItems = ShoppingCart.TotalItemCount;
         shoppingCartItemCountDisplay = shoppingCartItems > 0 ? "(" + shoppingCartItems + ")" : string.Empty;
     }
 }

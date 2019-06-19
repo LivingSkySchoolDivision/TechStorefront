@@ -18,11 +18,17 @@
 
 @if (order != null)
 {
+    <style type="text/css">
+        small {
+            color: rgba(125,125,125,1);
+        }
+    </style>
+
     <h1>Order Details</h1>
     <section style="margin-left: 10px;">
         <table class="table table-hover table-sm">
             <tr>
-                <th>Order Thumbprint</th>
+                <th>Order ID</th>
                 <td>@order.OrderThumbprint</td>
             </tr>
             <tr>
@@ -47,7 +53,7 @@
             </tr>
             <tr>
                 <th>Grand Total Price</th>
-                <td>$@order.OrderGrandTotal.ToString("#,##0.00")</td>
+                <td>$@order.OrderGrandTotal.ToString("#,##0.00") &nbsp;&nbsp; <small>($@order.OrderSubTotal.ToString("#,##0.00") + $@order.TotalGST.ToString("#,##0.00") GST + $@order.TotalPST.ToString("#,##0.00") PST  + $@order.TotalEHF.ToString("#,##0.00") EHF)</small></td>
             </tr>
             <tr>
                 <th>Customer Notes</th>
@@ -86,19 +92,34 @@
         <thead>
             <tr>
                 <th class="text-left">Item Name</th>
-                <th class="text-right">Item Price</th>
+                <th class="text-right">Price<br /><small>Per Item</small></th>
                 <th class="text-center">Quantity</th>
+                <th class="text-right">Pre tax/fees</th>
+                <th class="text-right">GST</th>
+                <th class="text-right">PST</th>
+                <th class="text-right"><a href="https://www.recyclemyelectronics.ca/sk/residential/environmental-handling-fee-ehf/" target="_blank"><abbr title="Environmental Handling Fee">EHF</abbr></a></th>
                 <th class="text-right">Total Price</th>
             </tr>
         </thead>
         @foreach (OrderItem item in order.Items.OrderBy(x => x.Name))
         {
-            <tr>
-                <td class="text-left">@item.Name</td>
-                <td class="text-right">$@item.ItemPrice.ToString("#,##0.00")</td>
-                <td class="text-center">@item.Quantity</td>
-                <td class="text-right">$@item.TotalPrice.ToString("#,##0.00")</td>
-            </tr>
+    <tr>
+        <td class="text-left">@item.Name</td>
+        <td class="text-right">$@item.ItemBasePrice.ToString("#,##0.00")</td>
+        <td class="text-center">@item.Quantity</td>
+        <td class="text-right">$@item.TotalBasePrice.ToString("#,##0.00")</td>
+        <td class="text-right">$@item.TotalGST.ToString("#,##0.00")<br /><small>$@item.ItemGST.ToString("#,##0.00")/item</small></td>
+        <td class="text-right">$@item.TotalPST.ToString("#,##0.00")<br /><small>$@item.ItemPST.ToString("#,##0.00")/item</small></td>
+        @if (item.ItemEHF > 0)
+        {
+            <td class="text-right">$@item.TotalEHF.ToString("#,##0.00")<br /><small>$@item.ItemEHF.ToString("#,##0.00")/item</small></td>
+        }
+        else
+        {
+            <td class="text-right">&nbsp;</td>
+        }
+        <td class="text-right">$@item.TotalPriceWithTax.ToString("#,##0.00")</td>
+    </tr>
         }
 
     </table>
