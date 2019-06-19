@@ -12,12 +12,8 @@ namespace LSSD.StoreFront.Manager.Pages
 {
     public class IndexModel : PageModel
     {
-        EmailHelper email;
-
         public IndexModel(IConfiguration config)
         {
-            IConfigurationSection emailSettings = config.GetSection("SMTP");
-            this.email = EmailHelper.GetInstance(emailSettings["hostname"], emailSettings["port"].ToInt(), emailSettings["username"], emailSettings["password"], emailSettings["fromaddress"]);
         }
 
         public void OnGet()
