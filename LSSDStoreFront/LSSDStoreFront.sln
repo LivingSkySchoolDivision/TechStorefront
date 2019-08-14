@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LSSDStoreFront-DB", "LSSDSt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LSSDStoreFront-Manager", "LSSDStoreFront-Manager\LSSDStoreFront-Manager.csproj", "{D328B3B2-8B94-4C94-A825-6BD3DADBBC05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSSDStoreFront-Tests", "LSSDStoreFront-Tests\LSSDStoreFront-Tests.csproj", "{41A033C2-CEC3-4FC5-95CF-1E7A73D62D65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LSSDStoreFront-Tests", "LSSDStoreFront-Tests\LSSDStoreFront-Tests.csproj", "{41A033C2-CEC3-4FC5-95CF-1E7A73D62D65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSSDStoreFront-EmailRunner", "LSSDStoreFront-EmailRunner\LSSDStoreFront-EmailRunner.csproj", "{7AC616C6-A1B4-4D3B-A707-A769D9C90771}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{41A033C2-CEC3-4FC5-95CF-1E7A73D62D65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41A033C2-CEC3-4FC5-95CF-1E7A73D62D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41A033C2-CEC3-4FC5-95CF-1E7A73D62D65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AC616C6-A1B4-4D3B-A707-A769D9C90771}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AC616C6-A1B4-4D3B-A707-A769D9C90771}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AC616C6-A1B4-4D3B-A707-A769D9C90771}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AC616C6-A1B4-4D3B-A707-A769D9C90771}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

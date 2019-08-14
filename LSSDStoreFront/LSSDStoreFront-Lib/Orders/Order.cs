@@ -10,7 +10,8 @@ namespace LSSD.StoreFront.Lib
         public string OrderThumbprint{ get; set; }
         public string UserThumbprint { get; set; } 
         public DateTime OrderDate { get; set; }
-        public string SubmittedBy { get; set; }
+        public string CustomerFullName { get; set; }
+        public string CustomerEmailAddress { get; set; }
         public string BudgetAccountNumber { get; set; }
 
         public decimal OrderGrandTotal { get; set; }
@@ -24,13 +25,12 @@ namespace LSSD.StoreFront.Lib
         public string ManagerNotes { get; set; }
         public List<OrderItem> Items { get; set; }
         public List<OrderStatusDetail> StatusDetails { get; set; }
-
+        
         public Order()
         {
             this.Items = new List<OrderItem>();
             this.StatusDetails = new List<OrderStatusDetail>();
         }
-
 
         public string LastKnownStatus
         {

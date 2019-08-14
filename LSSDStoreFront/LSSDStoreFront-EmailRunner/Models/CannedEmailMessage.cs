@@ -1,16 +1,19 @@
-﻿using System;
+﻿using LSSD.StoreFront.Lib;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LSSD.StoreFront.Lib.Email
+namespace LSSD.StoreFront.EmailRunner.Models
 {
     public class CannedEmailMessage
     {
+        public string To { get; set; }
         public string Subject { get; set; }
         public string Content { get; set; }
-
-
-                     
+        public Order Order { get; set; }
+        public bool ForCustomer { get; set; }
+        public bool ForOrderDesk { get; set; }
+               
         public static CannedEmailMessage TestEmail()
         {
             return new CannedEmailMessage()
@@ -20,7 +23,7 @@ namespace LSSD.StoreFront.Lib.Email
             };
         }
 
-        public static CannedEmailMessage CustomerOrderThanks(string customerName, Order order)
+        public static CannedEmailMessage CustomerOrderThanks(Order order)
         {
             StringBuilder htmlContent = new StringBuilder();
 
@@ -41,14 +44,14 @@ namespace LSSD.StoreFront.Lib.Email
             htmlContent.Append("<h2>STOREFRONT ORDER RECEIPT</h2>");
             htmlContent.Append("<p>Thank you for placing an order with the Living Sky Technology Storefront!</p>");
             htmlContent.Append("<p><b>Order Date:</b> " + order.OrderDate.ToLongDateString() + "</p>");
-            htmlContent.Append("<p><b>Order ID:</b> <a href=\"https://storefront.lskysd.ca/Order/" + order.OrderThumbprint +  " \">" + order.OrderThumbprint + "</a></p>");
+            htmlContent.Append("<p><b>Order ID:</b> <a href=\"https://storefront.lskysd.ca/Order/" + order.OrderThumbprint + " \">" + order.OrderThumbprint + "</a></p>");
             htmlContent.Append("<h3>Items Ordered</h3>");
             htmlContent.Append("<table>");
             htmlContent.Append("<thead><th>Item</th><th>Price</th><th>Quantity</th><th>Total Price (Pre-Tax)</th></thead>");
-            foreach(OrderItem item in order.Items)
+            foreach (OrderItem item in order.Items)
             {
                 htmlContent.Append("<tr><td>" + item.Name + "</td><td>$" + item.ItemBasePrice.ToString("#,##0.00") + "</td><td>" + item.Quantity + "</td><td>$" + item.TotalBasePrice.ToString("#,##0.00") + "</td></tr>");
-            }            
+            }
             htmlContent.Append("</table>");
             htmlContent.Append("<table style=\"width: 300px; margin: auto 0 auto auto; border: 1px solid #C0C0C0;\"><tr>");
             htmlContent.Append("<td><b>Sub Total</b></td><td>$" + order.OrderSubTotal.ToString("#,##0.00") + "</td></tr>");
@@ -63,12 +66,13 @@ namespace LSSD.StoreFront.Lib.Email
             return new CannedEmailMessage()
             {
                 Subject = "Your LSSD Storefront Order (" + order.OrderDate.ToShortDateString() + ")",
-                Content = htmlContent.ToString()
+                Content = htmlContent.ToString(),
+                ForCustomer = true
             };
 
         }
 
-        public static CannedEmailMessage HelpDeskOrderSubmit(string customerName, Order order)
+        public static CannedEmailMessage OrderDeskNotification(Order order)
         {
             StringBuilder htmlContent = new StringBuilder();
 
@@ -76,7 +80,7 @@ namespace LSSD.StoreFront.Lib.Email
 
             htmlContent.Append("<p><b>Order Date:</b> " + order.OrderDate.ToLongDateString() + "<br/>");
             htmlContent.Append("<b>Order Number:</b> <a href=\"https://storefrontmanager.lskysd.ca/Order/" + order.OrderThumbprint + "\">" + order.OrderThumbprint + "</a><br/>");
-            htmlContent.Append("<b>Submitted By:</b> " + order.SubmittedBy + "<br/>");
+            htmlContent.Append("<b>Submitted By:</b> " + order.CustomerFullName + " (" + order.CustomerEmailAddress + ")<br/>");
             htmlContent.Append("<b>Budget Number:</b> " + order.BudgetAccountNumber + "<br/>");
             htmlContent.Append("<b>Total Items:</b> " + order.OrderTotalItems + "<br/>");
 
@@ -89,25 +93,27 @@ namespace LSSD.StoreFront.Lib.Email
             htmlContent.Append("<thead><th>Item</th><th>Quantity</th><th>Price</th><th>Total Price</th><th>Admin Notes</th></thead>");
             foreach (OrderItem item in order.Items)
             {
-                htmlContent.Append("<tr><td><a href=\"https://storefront.lskysd.ca/Item/" + item.ProductId + "\">" + item.Name + "</a></td><td>" + item.Quantity + "</td><td>$" + item.ItemBasePrice.ToString("#,##0.00") + "</td><td>$" + ((decimal) item.Quantity * item.ItemBasePrice).ToString("#,##0.00") + "</td><td>NYI</td></tr>");
+                htmlContent.Append("<tr><td><a href=\"https://storefront.lskysd.ca/Item/" + item.ProductId + "\">" + item.Name + "</a></td><td>" + item.Quantity + "</td><td>$" + item.ItemBasePrice.ToString("#,##0.00") + "</td><td>$" + ((decimal)item.Quantity * item.ItemBasePrice).ToString("#,##0.00") + "</td><td></td></tr>");
             }
             htmlContent.Append("</table>");
             htmlContent.Append("&nbsp;");
             htmlContent.Append("<table>");
             htmlContent.Append("<tr><td><b>Sub Total</b></td><td>$" + order.OrderSubTotal.ToString("#,##0.00") + "</td></tr>");
             htmlContent.Append("<tr><td><b>GST</b></td><td>$" + order.TotalGST.ToString("#,##0.00") + "</td></tr>");
-            htmlContent.Append("<tr><td><b>PST</b></td><td>$" + order.TotalPST.ToString("#,##0.00") +  "</td></tr>");
+            htmlContent.Append("<tr><td><b>PST</b></td><td>$" + order.TotalPST.ToString("#,##0.00") + "</td></tr>");
             htmlContent.Append("<tr><td><b><abbr title=\"Environmental Handling Fee\">EHF</abbr></b></td><td>$" + order.TotalEHF.ToString("#,##0.00") + "</td></tr>");
             htmlContent.Append("<tr><td><big><b>Total</b><big></td><td><big>$" + order.OrderGrandTotal.ToString("#,##0.00") + "</big></td></tr>");
             htmlContent.Append("</table>");
-            htmlContent.Append("<p>Do not use this ticket to communicate with the customer.</p><p>Update order statuses on the <a href=\"https://storefrontmanager.lskysd.ca/Order/" + order.OrderThumbprint + "\">storefront manager page for this order</a>.</p>");
+            htmlContent.Append("<p><b>Do not use this ticket to communicate with the customer.</b> Send them an email directly, or create a help desk ticket on their behalf.</p><p>Update order statuses on the <a href=\"https://storefrontmanager.lskysd.ca/Order/" + order.OrderThumbprint + "\">storefront manager page for this order</a>.</p>");
 
             htmlContent.Append("</div></body></html>");
 
             return new CannedEmailMessage()
             {
-                Subject = "LSSD Storefront Order from " + customerName + " (" + order.OrderDate.ToShortDateString() + ")",
-                Content = htmlContent.ToString()
+                Subject = "LSSD Storefront Order from " + order.CustomerFullName + " (" + order.OrderDate.ToShortDateString() + ")",
+                Content = htmlContent.ToString(),
+                Order = order,
+                ForOrderDesk = true
             };
 
         }

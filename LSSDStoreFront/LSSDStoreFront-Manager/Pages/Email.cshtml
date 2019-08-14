@@ -1,0 +1,40 @@
+﻿@page
+@using Microsoft.Extensions.Configuration;
+@using LSSD.StoreFront.Lib;
+@inject IConfiguration config
+@model LSSDStoreFront_Manager.Pages.EmailModel
+@{
+    ViewData["Title"] = "Email";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    IConfigurationSection emailSettings = config.GetSection("SMTP");
+}
+
+<h1>Email</h1>
+
+<table class="table">
+    <tr>
+        <td>SMTP Hostname</td>
+        <td>@emailSettings["hostname"]</td>
+    </tr>
+    <tr>
+        <td>SMTP port</td>
+        <td>@emailSettings["port"]</td>
+    </tr>
+    <tr>
+        <td>From address</td>
+        <td>@emailSettings["fromaddress"]</td>
+    </tr>
+    <tr>
+        <td>Reply-to address</td>
+        <td>@emailSettings["replytoaddress"]</td>
+    </tr>
+    <tr>
+        <td>SMTP Username</td>
+        <td>@emailSettings["username"]</td>
+    </tr>
+    <tr>
+        <td>SMTP Username</td>
+        <td>@emailSettings["password"].MaskPassword()</td>
+    </tr>
+</table>

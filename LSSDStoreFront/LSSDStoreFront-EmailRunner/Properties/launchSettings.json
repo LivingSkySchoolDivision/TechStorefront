@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "LSSDStoreFront-EmailRunner": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "KEYVAULT_ENDPOINT": "https://lssd-storefront.vault.azure.net"
+      }
+    }
+  }
+}

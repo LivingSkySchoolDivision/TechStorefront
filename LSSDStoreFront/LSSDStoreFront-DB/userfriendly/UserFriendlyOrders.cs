@@ -50,7 +50,7 @@ namespace LSSD.StoreFront.DB
             return null;
         }
 
-        public Order CreateOrder(IEnumerable<ShoppingCartItem> items, string BudgetAccountNumber, string SubmittedBy, UserThumbprint userThumbprint, string customerNotes)
+        public Order CreateOrder(IEnumerable<ShoppingCartItem> items, string BudgetAccountNumber, string SubmittedByName, string SubmittdByEmail, UserThumbprint userThumbprint, string customerNotes)
         {
             OrderStatusDetailRepository orderStatusDetailRepository = new OrderStatusDetailRepository(this._dbContext);
             OrderItemRepository orderItemRepository = new OrderItemRepository(this._dbContext);
@@ -88,7 +88,7 @@ namespace LSSD.StoreFront.DB
                 OrderThumbprint = "WILL-GET-REPLACED",
                 Status = "Order Submitted",
                 Timestamp = DateTime.Now,
-                UpdatedBy = SubmittedBy,
+                UpdatedBy = SubmittedByName,
                 Notes = string.Empty
             };
 
@@ -98,7 +98,8 @@ namespace LSSD.StoreFront.DB
                 OrderThumbprint = "WILL-GET-REPLACED",
                 UserThumbprint = userThumbprint.Value,
                 OrderDate = DateTime.Now,
-                SubmittedBy = SubmittedBy,
+                CustomerFullName = SubmittedByName,
+                CustomerEmailAddress = SubmittdByEmail,
                 BudgetAccountNumber = BudgetAccountNumber,
                 CustomerNotes = customerNotes,
                 StatusDetails = new List<OrderStatusDetail>() { newOrderStatusDetail },

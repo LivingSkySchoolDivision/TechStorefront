@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using LSSD.StoreFront.Lib.Extensions;
 
 namespace LSSD.StoreFront.DB.repositories
 {
@@ -35,7 +36,8 @@ namespace LSSD.StoreFront.DB.repositories
                 OrderThumbprint = OrderThumbprint,
                 UserThumbprint = dataReader["UserThumbprint"].ToString(),
                 OrderDate = dataReader["OrderDate"].ToString().ToDateTime(),
-                SubmittedBy = dataReader["SubmittedByFullName"].ToString(),
+                CustomerFullName = dataReader["SubmittedByFullName"].ToString(),
+                CustomerEmailAddress = dataReader["SubmittedByEmailAddress"].ToString(),
                 BudgetAccountNumber = dataReader["BudgetAccountNumber"].ToString(),
                 CustomerNotes = dataReader["CustomerNotes"].ToString(),
                 ManagerNotes = dataReader["ManagerNotes"].ToString(),
@@ -46,10 +48,96 @@ namespace LSSD.StoreFront.DB.repositories
                 OrderSubTotal = dataReader["OrderSubTotal"].ToString().ToDecimal(),
                 TotalEHF = dataReader["TotalEHF"].ToString().ToDecimal(),
                 TotalGST = dataReader["TotalGST"].ToString().ToDecimal(),
-                TotalPST = dataReader["TotalPST"].ToString().ToDecimal(),
+                TotalPST = dataReader["TotalPST"].ToString().ToDecimal()
             };
         }
-                
+
+        public List<Order> GetAll()
+        {
+            List<Order> returnMe = new List<Order>();
+
+            using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand
+                {
+                    Connection = connection,
+                    CommandType = CommandType.Text,
+                    CommandText = "SELECT * FROM Orders;"
+                })
+                {
+                    sqlCommand.Connection.Open();
+                    SqlDataReader dbDataReader = sqlCommand.ExecuteReader();
+
+                    if (dbDataReader.HasRows)
+                    {
+                        while (dbDataReader.Read())
+                        {
+                            Order obj = dataReaderToObject(dbDataReader);
+                            if (obj != null)
+                            {
+                                returnMe.Add(obj);
+                            }
+                        }
+                    }
+
+                    sqlCommand.Connection.Close();
+                }
+            }
+
+            return returnMe;
+        }
+
+
+        public List<Order> Get(List<string> orderThumbs)
+        {
+            List<Order> returnMe = new List<Order>();
+
+            if (orderThumbs.Count > 0)
+            {
+                StringBuilder orderThumbsParameter = new StringBuilder();
+                foreach (string s in orderThumbs)
+                {
+                    orderThumbsParameter.Append("'" + s + "',");
+                }
+
+                // Remove the final comma
+                if (orderThumbsParameter.Length > 1)
+                {
+                    orderThumbsParameter.Remove(orderThumbsParameter.Length - 1, 1);
+                }
+
+                using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand
+                    {
+                        Connection = connection,
+                        CommandType = CommandType.Text,
+                        CommandText = "SELECT * FROM Orders WHERE OrderThumbprint in ( " + orderThumbsParameter.ToString() + " );"
+                    })
+                    {
+                        sqlCommand.Connection.Open();
+                        SqlDataReader dbDataReader = sqlCommand.ExecuteReader();
+
+                        if (dbDataReader.HasRows)
+                        {
+                            while (dbDataReader.Read())
+                            {
+                                Order obj = dataReaderToObject(dbDataReader);
+                                if (obj != null)
+                                {
+                                    returnMe.Add(obj);
+                                }
+                            }
+                        }
+
+                        sqlCommand.Connection.Close();
+                    }
+                }
+            }
+            return returnMe;
+        }
+
+
         public List<Order> GetForUser(UserThumbprint UserThumbprint)
         {
             List<Order> returnMe = new List<Order>();
@@ -86,6 +174,7 @@ namespace LSSD.StoreFront.DB.repositories
             return returnMe;
         }
 
+        
         public string Create(Order order)
         {
             string orderThumbprint = Crypto.Hash(order.UserThumbprint + ":" + order.BudgetAccountNumber + ":" + DateTime.Now.ToLongDateString() + ":" + DateTime.Now.ToLongTimeString());
@@ -98,15 +187,16 @@ namespace LSSD.StoreFront.DB.repositories
                 {
                     Connection = connection,
                     CommandType = CommandType.Text,
-                    CommandText = "INSERT INTO Orders(OrderThumbprint, UserThumbprint, OrderDate, SubmittedByFullName, BudgetAccountNumber, OrderGrandTotal, CustomerNotes, ManagerNotes, OrderTotalItems, OrderSubTotal, TotalGST, TotalPST, TotalEHF) " +
-                                                "VALUES(@OTP,@UTP,@ODATE,@SUBMITTEDBY,@BUDGETNUM, @GRANDTOTAL, @CUSTNOTES, @MANNOTES, @NUMITEMS, @SUBTOTAL, @TOTGST, @TOTPST, @TOTEHF)"
+                    CommandText = "INSERT INTO Orders(OrderThumbprint, UserThumbprint, OrderDate, SubmittedByFullName,SubmittedByEmailAddress, BudgetAccountNumber, OrderGrandTotal, CustomerNotes, ManagerNotes, OrderTotalItems, OrderSubTotal, TotalGST, TotalPST, TotalEHF) " +
+                                                "VALUES(@OTP,@UTP,@ODATE,@SUBMITTEDBY,@SUBMITTEDBYEMAIL,@BUDGETNUM, @GRANDTOTAL, @CUSTNOTES, @MANNOTES, @NUMITEMS, @SUBTOTAL, @TOTGST, @TOTPST, @TOTEHF)"
                 })
                 {
                     sqlCommand.Parameters.Clear();
                     sqlCommand.Parameters.AddWithValue("@OTP", orderThumbprint);
                     sqlCommand.Parameters.AddWithValue("@UTP", order.UserThumbprint);
                     sqlCommand.Parameters.AddWithValue("@ODATE", DateTime.Now);
-                    sqlCommand.Parameters.AddWithValue("@SUBMITTEDBY", order.SubmittedBy);
+                    sqlCommand.Parameters.AddWithValue("@SUBMITTEDBY", order.CustomerFullName);
+                    sqlCommand.Parameters.AddWithValue("@SUBMITTEDBYEMAIL", order.CustomerEmailAddress);
                     sqlCommand.Parameters.AddWithValue("@BUDGETNUM", order.BudgetAccountNumber);
                     sqlCommand.Parameters.AddWithValue("@GRANDTOTAL", order.OrderGrandTotal);
                     sqlCommand.Parameters.AddWithValue("@CUSTNOTES", order.CustomerNotes ?? string.Empty);
