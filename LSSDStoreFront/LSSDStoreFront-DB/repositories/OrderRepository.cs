@@ -48,7 +48,8 @@ namespace LSSD.StoreFront.DB.repositories
                 OrderSubTotal = dataReader["OrderSubTotal"].ToString().ToDecimal(),
                 TotalEHF = dataReader["TotalEHF"].ToString().ToDecimal(),
                 TotalGST = dataReader["TotalGST"].ToString().ToDecimal(),
-                TotalPST = dataReader["TotalPST"].ToString().ToDecimal()
+                TotalPST = dataReader["TotalPST"].ToString().ToDecimal(),
+                IsCompletelyFulfilled = dataReader["IsCompletelyFulfilled"].ToString().ToBool()
             };
         }
 
@@ -86,7 +87,52 @@ namespace LSSD.StoreFront.DB.repositories
 
             return returnMe;
         }
+                
+        public List<Order> GetIncomplete()
+        {
+            List<Order> returnMe = new List<Order>();
 
+            using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand
+                {
+                    Connection = connection,
+                    CommandType = CommandType.Text,
+                    CommandText = "SELECT * FROM Orders WHERE IsCompletelyFulfilled=0;"
+                })
+                {
+                    sqlCommand.Connection.Open();
+                    SqlDataReader dbDataReader = sqlCommand.ExecuteReader();
+
+                    if (dbDataReader.HasRows)
+                    {
+                        while (dbDataReader.Read())
+                        {
+                            Order obj = dataReaderToObject(dbDataReader);
+                            if (obj != null)
+                            {
+                                returnMe.Add(obj);
+                            }
+                        }
+                    }
+
+                    sqlCommand.Connection.Close();
+                }
+            }
+
+            return returnMe;
+        }
+
+        public Order Get(string orderThumb)
+        {
+            List<Order> foundOrders = Get(new List<string>() { orderThumb });
+            if (foundOrders.Count > 0)
+            {
+                return foundOrders[0];
+            }
+
+            return null;
+        }
 
         public List<Order> Get(List<string> orderThumbs)
         {
@@ -174,7 +220,46 @@ namespace LSSD.StoreFront.DB.repositories
             return returnMe;
         }
 
-        
+        public void MarkFulfilled(Order order)
+        {
+            using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand
+                {
+                    Connection = connection,
+                    CommandType = CommandType.Text,
+                    CommandText = "UPDATE Orders SET IsCompletelyFulfilled=1 WHERE OrderThumbprint=@OTP"
+                })
+                {
+                    sqlCommand.Parameters.Clear();
+                    sqlCommand.Parameters.AddWithValue("@OTP", order.OrderThumbprint);
+                    sqlCommand.Connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                    sqlCommand.Connection.Close();
+                }
+            }
+        }
+
+        public void MarkUnfulfilled(Order order)
+        {
+            using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand
+                {
+                    Connection = connection,
+                    CommandType = CommandType.Text,
+                    CommandText = "UPDATE Orders SET IsCompletelyFulfilled=0 WHERE OrderThumbprint=@OTP"
+                })
+                {
+                    sqlCommand.Parameters.Clear();
+                    sqlCommand.Parameters.AddWithValue("@OTP", order.OrderThumbprint);
+                    sqlCommand.Connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                    sqlCommand.Connection.Close();
+                }
+            }
+        }
+
         public string Create(Order order)
         {
             string orderThumbprint = Crypto.Hash(order.UserThumbprint + ":" + order.BudgetAccountNumber + ":" + DateTime.Now.ToLongDateString() + ":" + DateTime.Now.ToLongTimeString());

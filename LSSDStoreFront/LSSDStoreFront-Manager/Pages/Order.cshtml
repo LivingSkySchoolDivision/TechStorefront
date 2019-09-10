@@ -1,0 +1,131 @@
+﻿@page "{Id}"
+@using LSSD.StoreFront.Lib;
+@using LSSD.StoreFront.DB;
+@using LSSD.StoreFront.DB.repositories;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration config
+@model LSSDStoreFront_Manager.Pages.OrderModel
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString(ManagerSettings.ConnectionStringName));
+    OrderRepository orderRepo = new OrderRepository(dbContext);
+
+    Order order = orderRepo.Get(RouteData.Values["Id"].ToString());
+}
+@if (order != null)
+{
+    <style type="text/css">
+        small {
+            color: rgba(125,125,125,1);
+        }
+    </style>
+
+    <h1>Order Details</h1>
+    <section style="margin-left: 10px;">
+        <table class="table table-hover table-sm">
+            <tr>
+                <th>Order ID</th>
+                <td>@order.OrderThumbprint</td>
+            </tr>
+            <tr>
+                <th>Order Date</th>
+                <td>@order.OrderDate.ToLongDateString() @order.OrderDate.ToLongTimeString()</td>
+            </tr>
+            <tr>
+                <th>Order Status</th>
+                <td>@order.LastKnownStatus</td>
+            </tr>
+            <tr>
+                <th>Order submitted by</th>
+                <td>@order.CustomerFullName (@order.CustomerEmailAddress)</td>
+            </tr>
+            <tr>
+                <th>Budget Account Number</th>
+                <td>@order.BudgetAccountNumber</td>
+            </tr>
+            <tr>
+                <th>Total Items</th>
+                <td>@order.OrderTotalItems</td>
+            </tr>
+            <tr>
+                <th>Grand Total Price</th>
+                <td>$@order.OrderGrandTotal.ToString("#,##0.00") &nbsp;&nbsp; <small>($@order.OrderSubTotal.ToString("#,##0.00") + $@order.TotalGST.ToString("#,##0.00") GST + $@order.TotalPST.ToString("#,##0.00") PST  + $@order.TotalEHF.ToString("#,##0.00") EHF)</small></td>
+            </tr>
+            <tr>
+                <th>Customer Notes</th>
+                <td>@order.CustomerNotes</td>
+            </tr>
+        </table>
+    </section>
+    <br />
+    <br />
+
+    <h2>Order Status</h2>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th class="text-left">Date</th>
+                <th class="text-right">Time</th>
+                <th class="text-center">Status</th>
+                <th class="text-center">Updated by</th>
+                <th class="text-right">Notes</th>
+            </tr>
+        </thead>
+        @foreach (OrderStatusDetail detail in order.StatusDetails.OrderBy(x => x.Timestamp))
+        {
+            <tr>
+                <td class="text-left">@detail.Timestamp.ToLongDateString()</td>
+                <td class="text-right">@detail.Timestamp.ToLongTimeString()</td>
+                <td class="text-center">@detail.Status</td>
+                <td class="text-center">@detail.UpdatedBy</td>
+                <td class="text-right">@detail.Notes</td>
+            </tr>
+        }
+
+    </table>
+    <br />
+    <br />
+    <h2>Order Items</h2>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th class="text-left">Item Name</th>
+                <th class="text-right">Price<br /><small>Per Item</small></th>
+                <th class="text-center">Quantity</th>
+                <th class="text-right">Pre tax/fees</th>
+                <th class="text-right">GST</th>
+                <th class="text-right">PST</th>
+                <th class="text-right"><a href="https://www.recyclemyelectronics.ca/sk/residential/environmental-handling-fee-ehf/" target="_blank"><abbr title="Environmental Handling Fee">EHF</abbr></a></th>
+                <th class="text-right">Total Price</th>
+            </tr>
+        </thead>
+        @foreach (OrderItem item in order.Items.OrderBy(x => x.Name))
+        {
+            <tr>
+                <td class="text-left">@item.Name</td>
+                <td class="text-right">$@item.ItemBasePrice.ToString("#,##0.00")</td>
+                <td class="text-center">@item.Quantity</td>
+                <td class="text-right">$@item.TotalBasePrice.ToString("#,##0.00")</td>
+                <td class="text-right">$@item.TotalGST.ToString("#,##0.00")<br /><small>$@item.ItemGST.ToString("#,##0.00")/item</small></td>
+                <td class="text-right">$@item.TotalPST.ToString("#,##0.00")<br /><small>$@item.ItemPST.ToString("#,##0.00")/item</small></td>
+                @if (item.ItemEHF > 0)
+                {
+                    <td class="text-right">$@item.TotalEHF.ToString("#,##0.00")<br /><small>$@item.ItemEHF.ToString("#,##0.00")/item</small></td>
+                }
+                else
+                {
+                    <td class="text-right">&nbsp;</td>
+                }
+                <td class="text-right">$@item.TotalPriceWithTax.ToString("#,##0.00")</td>
+            </tr>
+        }
+
+    </table>
+
+}
+else
+{
+    <h1>Order not found</h1>
+    <p>Sorry!</p>
+}

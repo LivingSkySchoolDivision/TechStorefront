@@ -25,6 +25,7 @@ namespace LSSD.StoreFront.Lib
         public string ManagerNotes { get; set; }
         public List<OrderItem> Items { get; set; }
         public List<OrderStatusDetail> StatusDetails { get; set; }
+        public bool IsCompletelyFulfilled { get; set; }
         
         public Order()
         {

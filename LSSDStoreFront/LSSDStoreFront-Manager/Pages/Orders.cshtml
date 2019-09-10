@@ -1,9 +1,49 @@
 ﻿@page
+@using LSSD.StoreFront.DB;
+@using LSSD.StoreFront.DB.repositories;
+@using LSSD.StoreFront.Lib;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration config
 @model LSSDStoreFront_Manager.Pages.OrdersModel
 @{
-    ViewData["Title"] = "Orders";
+    ViewData["Title"] = "All Orders";
     Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    DatabaseContext dbContext = new DatabaseContext(config.GetConnectionString(ManagerSettings.ConnectionStringName));
+    OrderRepository orderRepo = new OrderRepository(dbContext);
+    List<Order> AllOrders = orderRepo.GetAll();
+    string UserDisplayName = ((System.Security.Claims.ClaimsIdentity)User.Identity).Claims.Where(c => c.Type == "name").FirstOrDefault().Value;
 }
 
-<h1>Orders</h1>
+<h1>Orders (Newest on top)</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th class="text-left">Order Date</th>
+            <th class="text-left">Submitted by</th>
+            <th class="text-right">Order Total</th>
+            <th class="text-center">Total Items</th>
+            <th class="text-center">Budget Number</th>
+            <th class="text-center">Order Status</th>
+            <th class="text-center">Complete?</th>
+            <th class="text-right">Details</th>
+        </tr>
+    </thead>
 
+    @foreach (Order order in AllOrders.OrderByDescending(x => x.OrderDate))
+    {
+<tr>
+    <td class="text-left">@order.OrderDate.ToShortDateString() @order.OrderDate.ToShortTimeString()</td>
+    <td class="text-left">@order.CustomerFullName</td>
+    <td class="text-right">$@order.OrderGrandTotal.ToString("#,##0.00")</td>
+    <td class="text-center">@order.OrderTotalItems</td>
+    <td class="text-center">@order.BudgetAccountNumber</td>
+    <td class="text-center">@order.LastKnownStatus</td>
+    <td class="text-center">@order.IsCompletelyFulfilled</td>
+    <td class="text-right"><a href="/Order/@order.OrderThumbprint">View order details</a></td>
+</tr>
+    }
+
+
+
+</table>
