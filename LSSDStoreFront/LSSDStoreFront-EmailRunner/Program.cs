@@ -18,6 +18,13 @@ namespace LSSDStoreFront_EmailRunner
 {
     class Program
     {
+        private const int sleepTimeMinutes = 15;
+
+        private static void ConsoleWrite(string message)
+        {
+            Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm K") + ": " + message);
+        }
+
         static void Main(string[] args)
         {
             IConfiguration configuration = new ConfigurationBuilder()
@@ -28,7 +35,7 @@ namespace LSSDStoreFront_EmailRunner
             string keyvault_endpoint = configuration["KEYVAULT_ENDPOINT"];
             if (!string.IsNullOrEmpty(keyvault_endpoint))
             {
-                Console.WriteLine("Loading configuration from Azure Key Vault: " + keyvault_endpoint);
+                ConsoleWrite("Loading configuration from Azure Key Vault: " + keyvault_endpoint);
                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
                 var keyVaultClient = new KeyVaultClient(
                                 new KeyVaultClient.AuthenticationCallback(
@@ -69,7 +76,7 @@ namespace LSSDStoreFront_EmailRunner
 
                     string helpDeskEmailAddress = smtpConfig["HelpDeskEmail"];
 
-                    Console.WriteLine("Found " + RequiredOrders.Count + " orders requiring email notifications");
+                    ConsoleWrite("Found " + RequiredOrders.Count + " orders requiring email notifications");
 
                     // Enqueue order desk emails
                     foreach (string t in OrdersNeedingOrderDeskNotifications)
@@ -81,7 +88,7 @@ namespace LSSDStoreFront_EmailRunner
                             if (helpDeskEmailAddress.Length > 0)
                             {
                                 email.NewMessage(helpDeskEmailAddress, CannedEmailMessage.OrderDeskNotification(thisOrder), thisOrder);
-                                Console.WriteLine("Enqueueing Order Desk email for order: " + thisOrder.OrderThumbprint);
+                                ConsoleWrite("Enqueueing Order Desk email for order: " + thisOrder.OrderThumbprint);
                             }
                         }
                     }
@@ -96,22 +103,22 @@ namespace LSSDStoreFront_EmailRunner
                             if (thisOrder.CustomerEmailAddress.Length > 0)
                             {
                                 email.NewMessage(thisOrder.CustomerEmailAddress, CannedEmailMessage.CustomerOrderThanks(thisOrder), thisOrder);
-                                Console.WriteLine("Enqueueing Customer email for order: " + thisOrder.OrderThumbprint);
+                                ConsoleWrite("Enqueueing Customer email for order: " + thisOrder.OrderThumbprint);
                             }
                         }
                     }
 
                     // Send all emails
-                    Console.WriteLine("Sending " + (OrdersNeedingCustomerNotifications.Count + OrdersNeedingOrderDeskNotifications.Count) + "  emails...");
+                    ConsoleWrite("Sending " + (OrdersNeedingCustomerNotifications.Count + OrdersNeedingOrderDeskNotifications.Count) + "  emails...");
                     email.FlushQueue(dbContext);
-                    Console.WriteLine("Done!");
+                    ConsoleWrite("Done!");
 
-                    Console.WriteLine("Sleeping...");
+                    ConsoleWrite("Sleeping for " + sleepTimeMinutes + " minutes...");
                 }
                 catch { }
 
                 // Sleep for 15 minutes
-                Task.Delay(15 * 60 * 1000).Wait();
+                Task.Delay(sleepTimeMinutes * 60 * 1000).Wait();
             }
         }
     }
