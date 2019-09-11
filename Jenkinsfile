@@ -35,7 +35,7 @@ pipeline {
                 dir("LSSDStoreFront") {
                     sh "docker build -t ${PRIVATE_REPO}:latest -f Dockerfile-Frontend -t ${PRIVATE_REPO}:${TAG} ."
                     sh "docker build -t ${PRIVATE_REPO_MAN}:latest -f Dockerfile-Manager -t ${PRIVATE_REPO_MAN}:${TAG} ." 
-                    sh "docker build -t ${PRIVATE_REPO_EMR}:latest -f Dockerfile-Manager -t ${PRIVATE_REPO_EMR}:${TAG} ."                        
+                    sh "docker build -t ${PRIVATE_REPO_EMR}:latest -f Dockerfile-EmailRunner -t ${PRIVATE_REPO_EMR}:${TAG} ."                        
                 }                           
             }
         }
