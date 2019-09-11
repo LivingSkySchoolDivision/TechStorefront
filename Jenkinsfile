@@ -4,6 +4,7 @@ pipeline {
         REPO = "techstorefront/storefront"
         PRIVATE_REPO = "${PRIVATE_DOCKER_REGISTRY}/${REPO}"
         PRIVATE_REPO_MAN = "${PRIVATE_DOCKER_REGISTRY}/${REPO}-manager"
+        PRIVATE_REPO_EMR = "${PRIVATE_DOCKER_REGISTRY}/${REPO}-emailrunner"
         TAG = "j-${env.BUILD_NUMBER}"
     }
     stages {
@@ -33,7 +34,8 @@ pipeline {
 
                 dir("LSSDStoreFront") {
                     sh "docker build -t ${PRIVATE_REPO}:latest -f Dockerfile-Frontend -t ${PRIVATE_REPO}:${TAG} ."
-                    sh "docker build -t ${PRIVATE_REPO_MAN}:latest -f Dockerfile-Manager -t ${PRIVATE_REPO_MAN}:${TAG} ."                        
+                    sh "docker build -t ${PRIVATE_REPO_MAN}:latest -f Dockerfile-Manager -t ${PRIVATE_REPO_MAN}:${TAG} ." 
+                    sh "docker build -t ${PRIVATE_REPO_EMR}:latest -f Dockerfile-Manager -t ${PRIVATE_REPO_EMR}:${TAG} ."                        
                 }                           
             }
         }
@@ -42,7 +44,9 @@ pipeline {
                 sh "docker push ${PRIVATE_REPO}:${TAG}"
                 sh "docker push ${PRIVATE_REPO}:latest" 
                 sh "docker push ${PRIVATE_REPO_MAN}:${TAG}"
-                sh "docker push ${PRIVATE_REPO_MAN}:latest"           
+                sh "docker push ${PRIVATE_REPO_MAN}:latest"   
+                sh "docker push ${PRIVATE_REPO_EMR}:${TAG}"
+                sh "docker push ${PRIVATE_REPO_EMR}:latest"           
             }
         }
     }
@@ -53,6 +57,8 @@ pipeline {
             sh "docker image rm ${PRIVATE_REPO}:latest" 
             sh "docker image rm ${PRIVATE_REPO_MAN}:${TAG}"
             sh "docker image rm ${PRIVATE_REPO_MAN}:latest"  
+            sh "docker image rm ${PRIVATE_REPO_EMR}:${TAG}"
+            sh "docker image rm ${PRIVATE_REPO_EMR}:latest"  
             deleteDir()
         }
         failure {

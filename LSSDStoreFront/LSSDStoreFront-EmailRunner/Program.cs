@@ -18,7 +18,6 @@ namespace LSSDStoreFront_EmailRunner
 {
     class Program
     {
-
         static void Main(string[] args)
         {
             IConfiguration configuration = new ConfigurationBuilder()
@@ -48,66 +47,68 @@ namespace LSSDStoreFront_EmailRunner
             // Program loop start
             while (true)
             {
-
-
-                OrderRepository orderRepo = new OrderRepository(dbContext);
-                OrderNotificationLogRepository orderNotificationRepo = new OrderNotificationLogRepository(dbContext);
-
-                // Find order ids requiring customer emails
-                List<string> OrdersNeedingCustomerNotifications = orderNotificationRepo.GetOrdersNeedingCustomerNotifications();
-
-                // Find order ids requiring order desk emails
-                List<string> OrdersNeedingOrderDeskNotifications = orderNotificationRepo.GetOrdersNeedingOrderDeskNotifications();
-
-                // Load the order objects so we can use them later
-                List<string> RequiredOrders = new List<string>();
-                RequiredOrders.AddRangeUnique(OrdersNeedingCustomerNotifications);
-                RequiredOrders.AddRangeUnique(OrdersNeedingOrderDeskNotifications);
-                Dictionary<string, Order> _orderCache = orderRepo.Get(RequiredOrders).ToDictionary(x => x.OrderThumbprint);
-
-                EmailHelper email = new EmailHelper(smtpConfig["hostname"], smtpConfig["port"].ToInt(), smtpConfig["username"], smtpConfig["password"], smtpConfig["fromaddress"], smtpConfig["replytoaddress"]);
-
-                string helpDeskEmailAddress = smtpConfig["HelpDeskEmail"];
-
-                Console.WriteLine("Found " + RequiredOrders.Count + " orders requiring email notifications");
-
-                // Enqueue order desk emails
-                foreach (string t in OrdersNeedingOrderDeskNotifications)
+                try
                 {
-                    if (_orderCache.ContainsKey(t))
+
+                    OrderRepository orderRepo = new OrderRepository(dbContext);
+                    OrderNotificationLogRepository orderNotificationRepo = new OrderNotificationLogRepository(dbContext);
+
+                    // Find order ids requiring customer emails
+                    List<string> OrdersNeedingCustomerNotifications = orderNotificationRepo.GetOrdersNeedingCustomerNotifications();
+
+                    // Find order ids requiring order desk emails
+                    List<string> OrdersNeedingOrderDeskNotifications = orderNotificationRepo.GetOrdersNeedingOrderDeskNotifications();
+
+                    // Load the order objects so we can use them later
+                    List<string> RequiredOrders = new List<string>();
+                    RequiredOrders.AddRangeUnique(OrdersNeedingCustomerNotifications);
+                    RequiredOrders.AddRangeUnique(OrdersNeedingOrderDeskNotifications);
+                    Dictionary<string, Order> _orderCache = orderRepo.Get(RequiredOrders).ToDictionary(x => x.OrderThumbprint);
+
+                    EmailHelper email = new EmailHelper(smtpConfig["hostname"], smtpConfig["port"].ToInt(), smtpConfig["username"], smtpConfig["password"], smtpConfig["fromaddress"], smtpConfig["replytoaddress"]);
+
+                    string helpDeskEmailAddress = smtpConfig["HelpDeskEmail"];
+
+                    Console.WriteLine("Found " + RequiredOrders.Count + " orders requiring email notifications");
+
+                    // Enqueue order desk emails
+                    foreach (string t in OrdersNeedingOrderDeskNotifications)
                     {
-                        Order thisOrder = _orderCache[t];
-                        // Only send emails to orders with email addresses
-                        if (helpDeskEmailAddress.Length > 0)
+                        if (_orderCache.ContainsKey(t))
                         {
-                            email.NewMessage(helpDeskEmailAddress, CannedEmailMessage.OrderDeskNotification(thisOrder), thisOrder);
-                            Console.WriteLine("Enqueueing Order Desk email for order: " + thisOrder.OrderThumbprint);
+                            Order thisOrder = _orderCache[t];
+                            // Only send emails to orders with email addresses
+                            if (helpDeskEmailAddress.Length > 0)
+                            {
+                                email.NewMessage(helpDeskEmailAddress, CannedEmailMessage.OrderDeskNotification(thisOrder), thisOrder);
+                                Console.WriteLine("Enqueueing Order Desk email for order: " + thisOrder.OrderThumbprint);
+                            }
                         }
                     }
-                }
 
-                // Enqueue customer emails
-                foreach (string t in OrdersNeedingCustomerNotifications)
-                {
-                    if (_orderCache.ContainsKey(t))
+                    // Enqueue customer emails
+                    foreach (string t in OrdersNeedingCustomerNotifications)
                     {
-                        Order thisOrder = _orderCache[t];
-                        // Only send emails to orders with email addresses
-                        if (thisOrder.CustomerEmailAddress.Length > 0)
+                        if (_orderCache.ContainsKey(t))
                         {
-                            email.NewMessage(thisOrder.CustomerEmailAddress, CannedEmailMessage.CustomerOrderThanks(thisOrder), thisOrder);
-                            Console.WriteLine("Enqueueing Customer email for order: " + thisOrder.OrderThumbprint);
+                            Order thisOrder = _orderCache[t];
+                            // Only send emails to orders with email addresses
+                            if (thisOrder.CustomerEmailAddress.Length > 0)
+                            {
+                                email.NewMessage(thisOrder.CustomerEmailAddress, CannedEmailMessage.CustomerOrderThanks(thisOrder), thisOrder);
+                                Console.WriteLine("Enqueueing Customer email for order: " + thisOrder.OrderThumbprint);
+                            }
                         }
                     }
+
+                    // Send all emails
+                    Console.WriteLine("Sending " + (OrdersNeedingCustomerNotifications.Count + OrdersNeedingOrderDeskNotifications.Count) + "  emails...");
+                    email.FlushQueue(dbContext);
+                    Console.WriteLine("Done!");
+
+                    Console.WriteLine("Sleeping...");
                 }
-
-                // Send all emails
-                Console.WriteLine("Sending " + (OrdersNeedingCustomerNotifications.Count + OrdersNeedingOrderDeskNotifications.Count) + "  emails...");
-                email.FlushQueue(dbContext);
-                Console.WriteLine("Done!");
-
-
-                Console.WriteLine("Sleeping...");
+                catch { }
 
                 // Sleep for 15 minutes
                 Task.Delay(15 * 60 * 1000).Wait();
