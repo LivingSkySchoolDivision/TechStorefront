@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using LSSD.StoreFront.Lib.Extensions;
+using System.Collections.Concurrent;
 
 namespace LSSD.StoreFront.DB.repositories
 {
@@ -260,41 +261,86 @@ namespace LSSD.StoreFront.DB.repositories
             }
         }
 
-        public string Create(Order order)
+        private bool DoesThumbprintAlreadyExist(string thumbprint)
         {
-            string orderThumbprint = Crypto.Hash(order.UserThumbprint + ":" + order.BudgetAccountNumber + ":" + DateTime.Now.ToLongDateString() + ":" + DateTime.Now.ToLongTimeString());
-
-            // Calculate some fields regardless of what was sent to this method
-
+            bool result = false;
             using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand
                 {
                     Connection = connection,
                     CommandType = CommandType.Text,
-                    CommandText = "INSERT INTO Orders(OrderThumbprint, UserThumbprint, OrderDate, SubmittedByFullName,SubmittedByEmailAddress, BudgetAccountNumber, OrderGrandTotal, CustomerNotes, ManagerNotes, OrderTotalItems, OrderSubTotal, TotalGST, TotalPST, TotalEHF) " +
-                                                "VALUES(@OTP,@UTP,@ODATE,@SUBMITTEDBY,@SUBMITTEDBYEMAIL,@BUDGETNUM, @GRANDTOTAL, @CUSTNOTES, @MANNOTES, @NUMITEMS, @SUBTOTAL, @TOTGST, @TOTPST, @TOTEHF)"
+                    CommandText = "SELECT OrderThumbprint FROM Orders WHERE OrderThumbprint=@ORDERID;"
                 })
                 {
-                    sqlCommand.Parameters.Clear();
-                    sqlCommand.Parameters.AddWithValue("@OTP", orderThumbprint);
-                    sqlCommand.Parameters.AddWithValue("@UTP", order.UserThumbprint);
-                    sqlCommand.Parameters.AddWithValue("@ODATE", DateTime.Now);
-                    sqlCommand.Parameters.AddWithValue("@SUBMITTEDBY", order.CustomerFullName);
-                    sqlCommand.Parameters.AddWithValue("@SUBMITTEDBYEMAIL", order.CustomerEmailAddress);
-                    sqlCommand.Parameters.AddWithValue("@BUDGETNUM", order.BudgetAccountNumber);
-                    sqlCommand.Parameters.AddWithValue("@GRANDTOTAL", order.OrderGrandTotal);
-                    sqlCommand.Parameters.AddWithValue("@CUSTNOTES", order.CustomerNotes ?? string.Empty);
-                    sqlCommand.Parameters.AddWithValue("@MANNOTES", order.ManagerNotes ?? string.Empty);
-                    sqlCommand.Parameters.AddWithValue("@NUMITEMS", order.OrderTotalItems);
-                    sqlCommand.Parameters.AddWithValue("@SUBTOTAL", order.OrderSubTotal);
-                    sqlCommand.Parameters.AddWithValue("@TOTGST", order.TotalGST);
-                    sqlCommand.Parameters.AddWithValue("@TOTPST", order.TotalPST);
-                    sqlCommand.Parameters.AddWithValue("@TOTEHF", order.TotalEHF);
+                    sqlCommand.Parameters.AddWithValue("ORDERID", thumbprint);
                     sqlCommand.Connection.Open();
-                    sqlCommand.ExecuteNonQuery();
+                    SqlDataReader dbDataReader = sqlCommand.ExecuteReader();
+                    if (dbDataReader.HasRows)
+                    {
+                        while (dbDataReader.Read())
+                        {
+                            result = true;
+                            break;
+                        }
+                    }
                     sqlCommand.Connection.Close();
                 }
+            }
+
+            return result;
+        }
+
+        private static object _lock;
+
+        public string Create(Order order)
+        {
+            string orderThumbprint = Crypto.Hash(Environment.MachineName + ":" + order.UserThumbprint + ":" + order.BudgetAccountNumber + ":" + DateTime.Now.ToLongDateString() + ":" + DateTime.Now.ToLongTimeString() + ":" + DateTime.Now.Millisecond);
+
+            lock (_lock)
+            {                
+                // Make sure we don't already have an order with this exact thumbprint. If we do, the user double clicked.
+                // It still might be possible (though incredibly unlikely) that the orders were intentional, so rather than
+                // remove an order, just submit the order twice twith two different IDs. Then it's easier to spot and clean up
+
+                int justANumber = 0;
+                while (DoesThumbprintAlreadyExist(orderThumbprint))
+                {
+                    orderThumbprint = Crypto.Hash(orderThumbprint +":" + DateTime.Now.ToLongDateString() + ":" + DateTime.Now.ToLongTimeString() + ":" + DateTime.Now.Millisecond + ":" + justANumber);
+                    justANumber++;
+                } 
+
+                using (SqlConnection connection = new SqlConnection(_dbConnection.ConnectionString))
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand
+                    {
+                        Connection = connection,
+                        CommandType = CommandType.Text,
+                        CommandText = "INSERT INTO Orders(OrderThumbprint, UserThumbprint, OrderDate, SubmittedByFullName,SubmittedByEmailAddress, BudgetAccountNumber, OrderGrandTotal, CustomerNotes, ManagerNotes, OrderTotalItems, OrderSubTotal, TotalGST, TotalPST, TotalEHF, ServerName) " +
+                                                    "VALUES(@OTP,@UTP,GETDATE(),@SUBMITTEDBY,@SUBMITTEDBYEMAIL,@BUDGETNUM, @GRANDTOTAL, @CUSTNOTES, @MANNOTES, @NUMITEMS, @SUBTOTAL, @TOTGST, @TOTPST, @TOTEHF, @SRVRNAME)"
+                    })
+                    {
+                        sqlCommand.Parameters.Clear();
+                        sqlCommand.Parameters.AddWithValue("@OTP", orderThumbprint);
+                        sqlCommand.Parameters.AddWithValue("@UTP", order.UserThumbprint);
+                        sqlCommand.Parameters.AddWithValue("@SUBMITTEDBY", order.CustomerFullName);
+                        sqlCommand.Parameters.AddWithValue("@SUBMITTEDBYEMAIL", order.CustomerEmailAddress);
+                        sqlCommand.Parameters.AddWithValue("@BUDGETNUM", order.BudgetAccountNumber);
+                        sqlCommand.Parameters.AddWithValue("@GRANDTOTAL", order.OrderGrandTotal);
+                        sqlCommand.Parameters.AddWithValue("@CUSTNOTES", order.CustomerNotes ?? string.Empty);
+                        sqlCommand.Parameters.AddWithValue("@MANNOTES", order.ManagerNotes ?? string.Empty);
+                        sqlCommand.Parameters.AddWithValue("@NUMITEMS", order.OrderTotalItems);
+                        sqlCommand.Parameters.AddWithValue("@SUBTOTAL", order.OrderSubTotal);
+                        sqlCommand.Parameters.AddWithValue("@TOTGST", order.TotalGST);
+                        sqlCommand.Parameters.AddWithValue("@TOTPST", order.TotalPST);
+                        sqlCommand.Parameters.AddWithValue("@TOTEHF", order.TotalEHF);
+                        sqlCommand.Parameters.AddWithValue("@SRVRNAME", Environment.MachineName);
+                        sqlCommand.Connection.Open();
+                        sqlCommand.ExecuteNonQuery();
+                        sqlCommand.Connection.Close();
+                    }
+                }
+
             }
 
             return orderThumbprint;
