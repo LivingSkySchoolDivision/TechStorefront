@@ -291,7 +291,7 @@ namespace LSSD.StoreFront.DB.repositories
             return result;
         }
 
-        private static object _lock;
+        private static object _lock = new object();
 
         public string Create(Order order)
         {
