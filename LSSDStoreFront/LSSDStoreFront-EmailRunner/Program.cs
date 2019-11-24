@@ -51,12 +51,12 @@ namespace LSSDStoreFront_EmailRunner
             DatabaseContext dbContext = new DatabaseContext(configuration.GetConnectionString(RunnerSettings.ConnectionStringName));
 
 
+            ConsoleWrite("EmailRunner starting main loop...");
             // Program loop start
             while (true)
             {
                 try
                 {
-
                     OrderRepository orderRepo = new OrderRepository(dbContext);
                     OrderNotificationLogRepository orderNotificationRepo = new OrderNotificationLogRepository(dbContext);
 
@@ -115,7 +115,10 @@ namespace LSSDStoreFront_EmailRunner
 
                     ConsoleWrite("Sleeping for " + sleepTimeMinutes + " minutes...");
                 }
-                catch { }
+                catch(Exception ex) {
+
+                    ConsoleWrite("FAIL: " + ex.Message);
+                }
 
                 // Sleep for 15 minutes
                 Task.Delay(sleepTimeMinutes * 60 * 1000).Wait();
