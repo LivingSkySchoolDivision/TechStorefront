@@ -6,7 +6,7 @@
     bool UserAccessGranted = false;
     if (User.Identity.IsAuthenticated)
     {
-        if (User.HasClaim("groups", config.GetSection("AccessControl")["FrontEnd"]))
+        if (User.HasClaim("groups", config.GetSection("AccessControl")["Manager"]))
         {
             UserAccessGranted = true;
         }
