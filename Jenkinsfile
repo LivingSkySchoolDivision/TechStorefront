@@ -5,7 +5,7 @@ pipeline {
         PRIVATE_REPO = "${PRIVATE_DOCKER_REGISTRY}/${REPO}"
         PRIVATE_REPO_MAN = "${PRIVATE_DOCKER_REGISTRY}/${REPO}-manager"
         PRIVATE_REPO_EMR = "${PRIVATE_DOCKER_REGISTRY}/${REPO}-emailrunner"
-        TAG = "j-${env.BUILD_NUMBER}"
+        TAG = "${BUILD_TIMESTAMP}"
     }
     stages {
         stage('Test') {
