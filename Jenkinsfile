@@ -17,8 +17,7 @@ pipeline {
             }
             steps {
                 git branch: 'master',
-                    credentialsId: 'JENKINS-AZUREDEVOPS',
-                    url: 'git@ssh.dev.azure.com:v3/LivingSkySchoolDivision/LSSDStoreFront/LSSDStoreFront'
+                    url: 'https://sourcecode.lskysd.ca/PublicCode/TechStorefront.git'
                
                 dir("LSSDStoreFront") {
                     sh 'dotnet build'
@@ -29,8 +28,7 @@ pipeline {
         stage('Docker build') {            
             steps {
                 git branch: 'master',
-                    credentialsId: 'JENKINS-AZUREDEVOPS',
-                    url: 'git@ssh.dev.azure.com:v3/LivingSkySchoolDivision/LSSDStoreFront/LSSDStoreFront'
+                    url: 'https://sourcecode.lskysd.ca/PublicCode/TechStorefront.git'
 
                 dir("LSSDStoreFront") {
                     sh "docker build -t ${PRIVATE_REPO}:latest -f Dockerfile-Frontend -t ${PRIVATE_REPO}:${TAG} ."
@@ -60,11 +58,6 @@ pipeline {
             sh "docker image rm ${PRIVATE_REPO_EMR}:${TAG}"
             sh "docker image rm ${PRIVATE_REPO_EMR}:latest"  
             deleteDir()
-        }
-        failure {
-            mail to:'jenkinsalerts@lskysd.ca',
-                subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
-                body: "Something is wrong with ${env.BUILD_URL}"
         }
     }
 }
